@@ -7,3 +7,13 @@ api-version: '26.2'
 load: POSTWORLD
 
 authors: [Jerae]
+
+commands:
+  nickname:
+    description: "Allows players to change their nickname"
+    aliases:
+      - nick
+    usage: "/<command> [player] <displayName | -reset>"
+  a1:
+    description: "A1 plugin core commands"
+    usage: "/<command> <version|reload>"

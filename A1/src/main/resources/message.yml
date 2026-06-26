@@ -1,0 +1,7 @@
+nickname-set: "&aYour nickname has been changed to %player_displayname%!"
+nickname-reset: "&eYour nickname has been reset."
+nickname-set-other: "&aYou changed %player_username%'s nickname to %player_displayname%!"
+nickname-reset-other: "&eYou reset %player_username%'s nickname."
+no-permission: "&cYou do not have permission to do this."
+plugin-reloaded: "&aPlugin successfully reloaded."
+version-message: "&bA1 Version: %a1_version%"
