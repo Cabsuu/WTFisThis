@@ -17,3 +17,6 @@ commands:
   a1:
     description: "A1 plugin core commands"
     usage: "/<command> <version|reload>"
+  afk:
+    description: "Toggle AFK status"
+    usage: "/<command>"
