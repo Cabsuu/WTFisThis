@@ -1,0 +1,3 @@
+# Plugin Configuration
+# Do not touch this
+config-version: '${version}'
