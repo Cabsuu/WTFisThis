@@ -1,0 +1,17 @@
+--- pom.xml
++++ pom.xml
+@@ -19,6 +19,13 @@
+         <maven.compiler.target>17</maven.compiler.target>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
++    <dependencyManagement>
++        <dependencies>
++            <dependency>
++                <groupId>org.junit.jupiter</groupId>
++                <artifactId>junit-jupiter-api</artifactId>
++                <version>5.10.0</version>
++                <scope>test</scope>
++            </dependency>
++        </dependencies>
++    </dependencyManagement>
+ </project>

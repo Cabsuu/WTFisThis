@@ -1,6 +1,6 @@
 name: A1
 description: $description
-version: '${version}'
+version: '1.0'
 main: org.jerae.a1.A1
 api-version: '26.2'
 load: POSTWORLD

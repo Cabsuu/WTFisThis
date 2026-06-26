@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.jerae</groupId>
-  <artifactId>a2</artifactId>
+  <artifactId>a1</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
 
-  <name>a2</name>
+  <name>A1</name>
 
   <properties>
     <java.version>25</java.version>
@@ -63,12 +63,6 @@
       <artifactId>paper-api</artifactId>
       <version>[26.2.build,)</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.10.0</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

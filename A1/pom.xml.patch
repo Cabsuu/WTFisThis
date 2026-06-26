@@ -1,0 +1,20 @@
+--- A1/pom.xml
++++ A1/pom.xml
+@@ -53,5 +53,17 @@
+       <version>[26.2.build,)</version>
+       <scope>provided</scope>
+     </dependency>
++    <dependency>
++      <groupId>org.jerae</groupId>
++      <artifactId>a2</artifactId>
++      <version>1.0</version>
++      <scope>provided</scope>
++    </dependency>
++    <dependency>
++      <groupId>org.jerae</groupId>
++      <artifactId>a3</artifactId>
++      <version>1.0</version>
++      <scope>provided</scope>
++    </dependency>
+   </dependencies>
+ </project>

@@ -1,0 +1,7 @@
+no-permission: "&cYou don't have permission to use this command."
+nick-changed: "&aYour nickname has been changed to %player_displayname%."
+nick-reset: "&aYour nickname has been reset."
+nick-other-changed: "&aYou changed %player_username%'s nickname."
+nick-other-reset: "&aYou reset %player_username%'s nickname."
+version-message: "&aA1 Plugin Version: %a1_version%"
+reload-message: "&aA1 Plugin files reloaded."

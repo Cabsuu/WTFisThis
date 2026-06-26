@@ -6,7 +6,8 @@ public final class A2 extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        getServer().getPluginManager().registerEvents(new A2ChatListener(), this);
+        getLogger().info("A2 Chat Listener enabled.");
     }
 
     @Override
