@@ -1,0 +1,9 @@
+name: A3
+description: $description
+version: '${version}'
+
+main: org.jerae.a3.A3
+api-version: '26.2'
+load: POSTWORLD
+
+authors: [Jerae]
