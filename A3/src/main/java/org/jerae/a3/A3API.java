@@ -37,6 +37,17 @@ public class A3API {
             processed = processed.replace("%a1_version%", version);
         }
 
+        Pattern otherUsernamePattern = Pattern.compile("(?i)%otherplayer_username_([a-zA-Z0-9_]+)%");
+        Matcher otherUsernameMatcher = otherUsernamePattern.matcher(processed);
+        StringBuffer otherSb = new StringBuffer();
+        while (otherUsernameMatcher.find()) {
+            String pName = otherUsernameMatcher.group(1);
+            Player target = Bukkit.getPlayerExact(pName);
+            otherUsernameMatcher.appendReplacement(otherSb, target != null ? target.getName() : pName);
+        }
+        otherUsernameMatcher.appendTail(otherSb);
+        processed = otherSb.toString();
+
         // Process cooldown placeholders dynamically: %[plugin].cooldown.[command]%
         Pattern cooldownPattern = Pattern.compile("%([a-zA-Z0-9]+)\\.cooldown\\.([a-zA-Z0-9]+)%");
         Matcher matcher = cooldownPattern.matcher(processed);
@@ -68,6 +79,18 @@ public class A3API {
                 .replacement(player.displayName())
                 .build());
         }
+
+        parsed = parsed.replaceText(TextReplacementConfig.builder()
+            .match("(?i)%otherplayer_displayname_([a-zA-Z0-9_]+)%")
+            .replacement((matchResult, builder) -> {
+                String pName = matchResult.group(1);
+                Player target = Bukkit.getPlayerExact(pName);
+                if (target != null) {
+                    return target.displayName();
+                }
+                return Component.text(pName);
+            })
+            .build());
 
         return parsed;
     }

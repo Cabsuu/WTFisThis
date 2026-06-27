@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jerae.a2.A2API;
+import org.jerae.a3.A3API;
 
 public class Commands implements CommandExecutor {
 
@@ -58,7 +59,7 @@ public class Commands implements CommandExecutor {
                 if (target.equals(player)) {
                     MessageUtil.sendMessage(plugin, player, "nickname-reset");
                 } else {
-                    MessageUtil.sendMessage(plugin, player, "nickname-reset-other");
+                    MessageUtil.sendMessageWithTarget(plugin, player, target, "nickname-reset-other");
                 }
                 return true;
             }
@@ -76,7 +77,7 @@ public class Commands implements CommandExecutor {
             if (target.equals(player)) {
                 MessageUtil.sendMessage(plugin, player, "nickname-set");
             } else {
-                MessageUtil.sendMessage(plugin, player, "nickname-set-other");
+                MessageUtil.sendMessageWithTarget(plugin, player, target, "nickname-set-other");
             }
 
             return true;
@@ -107,8 +108,10 @@ public class Commands implements CommandExecutor {
 
             if (!isAfk) {
                 MessageUtil.sendMessage(plugin, player, "afk-enabled");
+                plugin.broadcastAfkStatus(player, true);
             } else {
                 MessageUtil.sendMessage(plugin, player, "afk-disabled");
+                plugin.broadcastAfkStatus(player, false);
             }
             return true;
         }

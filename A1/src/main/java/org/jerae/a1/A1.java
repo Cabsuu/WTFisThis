@@ -1,5 +1,7 @@
 package org.jerae.a1;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -52,6 +54,19 @@ public final class A1 extends JavaPlugin implements Listener {
         return afkManager;
     }
 
+    public void broadcastAfkStatus(Player afkPlayer, boolean isAfk) {
+        String path = isAfk ? "afk-broadcast-enabled" : "afk-broadcast-disabled";
+        String msg = configManager.getMessages().getString(path);
+        if (msg == null || msg.isEmpty()) return;
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!p.equals(afkPlayer)) {
+                // Pass afkPlayer as the context so %player_username% gets replaced properly for the broadcast message
+                p.sendMessage(A3API.parse(afkPlayer, msg));
+            }
+        }
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         String nickname = dataManager.getNickname(event.getPlayer().getUniqueId());
@@ -77,6 +92,7 @@ public final class A1 extends JavaPlugin implements Listener {
             if (afkManager.isAfk(event.getPlayer())) {
                 afkManager.setAfk(event.getPlayer(), false);
                 MessageUtil.sendMessage(this, event.getPlayer(), "afk-disabled");
+                broadcastAfkStatus(event.getPlayer(), false);
             }
         }
     }
@@ -86,6 +102,7 @@ public final class A1 extends JavaPlugin implements Listener {
         if (afkManager.isAfk(event.getPlayer())) {
             afkManager.setAfk(event.getPlayer(), false);
             MessageUtil.sendMessage(this, event.getPlayer(), "afk-disabled");
+            broadcastAfkStatus(event.getPlayer(), false);
         }
     }
 }
