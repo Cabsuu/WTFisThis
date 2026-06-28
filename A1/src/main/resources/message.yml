@@ -1,7 +1,7 @@
 nickname-set: "&eYour nickname changed to %player_displayname%&e!"
 nickname-reset: "&eYou no longer have a nickname."
 nickname-set-other: "&e%otherplayer_username_<player>%'s nickname changed to %otherplayer_displayname_<player>%&e!"
-nickname-reset-other: "&e%otherplayer_username_<player>% has no longer a nickname."
+nickname-reset-other: "&e%otherplayer_username_<player>% no longer has a nickname."
 no-permission: "&cYou do not have permission to use this command."
 plugin-reloaded: "&aPlugin successfully reloaded."
 version-message: "&bA1 Version: %a1_version%"
