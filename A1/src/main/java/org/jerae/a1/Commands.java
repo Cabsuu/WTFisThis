@@ -26,7 +26,7 @@ public class Commands implements CommandExecutor {
             }
 
             if (!player.hasPermission("a1.nick")) {
-                sendMessage(player, "no-permission");
+                MessageUtil.sendMessage(plugin, player, "no-permission");
                 return true;
             }
 
@@ -40,7 +40,7 @@ public class Commands implements CommandExecutor {
 
             if (args.length == 2) {
                 if (!player.hasPermission("a1.nick.others")) {
-                    sendMessage(player, "no-permission");
+                    MessageUtil.sendMessage(plugin, player, "no-permission");
                     return true;
                 }
                 target = Bukkit.getPlayer(args[0]);
@@ -57,9 +57,9 @@ public class Commands implements CommandExecutor {
                 plugin.getDataManager().setNickname(target.getUniqueId(), null);
                 target.displayName(target.name());
                 if (target.equals(player)) {
-                    sendMessage(player, "nickname-reset");
+                    MessageUtil.sendMessage(plugin, player, "nickname-reset");
                 } else {
-                    sendMessage(player, "nickname-reset-other");
+                    MessageUtil.sendMessageWithTarget(plugin, player, target, "nickname-reset-other");
                 }
                 return true;
             }
@@ -75,11 +75,44 @@ public class Commands implements CommandExecutor {
             plugin.getDataManager().setNickname(target.getUniqueId(), arg);
 
             if (target.equals(player)) {
-                sendMessage(player, "nickname-set");
+                MessageUtil.sendMessage(plugin, player, "nickname-set");
             } else {
-                sendMessage(player, "nickname-set-other");
+                MessageUtil.sendMessageWithTarget(plugin, player, target, "nickname-set-other");
             }
 
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("afk")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+
+            if (!player.hasPermission("a1.afk")) {
+                MessageUtil.sendMessage(plugin, player, "no-permission");
+                return true;
+            }
+
+            if (!player.hasPermission("a1.afk.cooldownbypass")) {
+                double remaining = plugin.getAfkManager().getRemainingCooldown(player, "afk");
+                if (remaining > 0) {
+                    MessageUtil.sendMessage(plugin, player, "afk-cooldown-msg");
+                    return true;
+                }
+                plugin.getAfkManager().setCooldown(player, "afk");
+            }
+
+            boolean isAfk = plugin.getAfkManager().isAfk(player);
+            plugin.getAfkManager().setAfk(player, !isAfk);
+
+            if (!isAfk) {
+                MessageUtil.sendMessage(plugin, player, "afk-enabled");
+                plugin.broadcastAfkStatus(player, true);
+            } else {
+                MessageUtil.sendMessage(plugin, player, "afk-disabled");
+                plugin.broadcastAfkStatus(player, false);
+            }
             return true;
         }
 
@@ -91,7 +124,7 @@ public class Commands implements CommandExecutor {
 
             if (args[0].equalsIgnoreCase("version")) {
                 if (sender instanceof Player player) {
-                    sendMessage(player, "version-message");
+                    MessageUtil.sendMessage(plugin, player, "version-message");
                 } else {
                     String msg = plugin.getConfigManager().getMessages().getString("version-message", "&bA1 Version: %a1_version%");
                     msg = msg.replace("%a1_version%", plugin.getPluginMeta().getVersion());
@@ -103,7 +136,7 @@ public class Commands implements CommandExecutor {
             if (args[0].equalsIgnoreCase("reload")) {
                 if (!sender.hasPermission("a1.reload")) {
                     if (sender instanceof Player player) {
-                        sendMessage(player, "no-permission");
+                        MessageUtil.sendMessage(plugin, player, "no-permission");
                     } else {
                         sender.sendMessage("No permission.");
                     }
@@ -111,7 +144,7 @@ public class Commands implements CommandExecutor {
                 }
                 plugin.getConfigManager().reload();
                 if (sender instanceof Player player) {
-                    sendMessage(player, "plugin-reloaded");
+                    MessageUtil.sendMessage(plugin, player, "plugin-reloaded");
                 } else {
                     sender.sendMessage("Plugin successfully reloaded.");
                 }
@@ -120,12 +153,5 @@ public class Commands implements CommandExecutor {
         }
 
         return false;
-    }
-
-    private void sendMessage(Player player, String path) {
-        String msg = plugin.getConfigManager().getMessages().getString(path);
-        if (msg != null && !msg.isEmpty()) {
-            player.sendMessage(A3API.parse(player, msg));
-        }
     }
 }

@@ -14,15 +14,21 @@ import java.util.UUID;
 public class DataManager {
 
     private final Plugin plugin;
-    private final File dataFile;
+    private File dataFile;
     private final Gson gson;
     private Map<UUID, PlayerData> dataMap;
 
     public DataManager(Plugin plugin) {
         this.plugin = plugin;
-        this.dataFile = new File(plugin.getDataFolder(), "nicknames.json");
+        this.dataFile = new File(plugin.getDataFolder(), "data.json");
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.dataMap = new HashMap<>();
+
+        File oldFile = new File(plugin.getDataFolder(), "nicknames.json");
+        if (oldFile.exists() && !dataFile.exists()) {
+            oldFile.renameTo(dataFile);
+        }
+
         load();
     }
 
@@ -39,7 +45,7 @@ public class DataManager {
                 dataMap = loadedData;
             }
         } catch (IOException e) {
-            plugin.getLogger().severe("Could not load nicknames.json");
+            plugin.getLogger().severe("Could not load data.json");
             e.printStackTrace();
         }
     }
@@ -48,7 +54,7 @@ public class DataManager {
         try (Writer writer = new FileWriter(dataFile)) {
             gson.toJson(dataMap, writer);
         } catch (IOException e) {
-            plugin.getLogger().severe("Could not save nicknames.json");
+            plugin.getLogger().severe("Could not save data.json");
             e.printStackTrace();
         }
     }
