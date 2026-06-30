@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jerae.a2.A2API;
 
@@ -70,8 +71,35 @@ public class A3API {
         matcher.appendTail(sb);
         processed = sb.toString();
 
+        // Item placeholders
+        if (processed.contains("%item_material%")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            String matName = (item != null && item.getType().isItem()) ? item.getType().name() : "AIR";
+            processed = processed.replace("%item_material%", matName);
+        }
+
         // Apply colors globally using A2 API. We assume maximum features allowed here as requested.
         Component parsed = A2API.format(processed, true, true, true, true, true);
+
+        if (message.contains("%item_displayname%")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            Component itemName;
+            if (item != null && item.getType().isItem() && !item.getType().isAir()) {
+                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                    itemName = item.getItemMeta().displayName();
+                } else {
+                    itemName = Component.translatable(item.getType().translationKey());
+                }
+            } else {
+                itemName = Component.text("Air");
+            }
+            if (itemName != null) {
+                parsed = parsed.replaceText(TextReplacementConfig.builder()
+                    .matchLiteral("%item_displayname%")
+                    .replacement(itemName)
+                    .build());
+            }
+        }
 
         if (message.contains("%player_displayname%")) {
              parsed = parsed.replaceText(TextReplacementConfig.builder()

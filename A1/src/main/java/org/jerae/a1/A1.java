@@ -31,6 +31,7 @@ public final class A1 extends JavaPlugin implements Listener {
         getCommand("nickname").setExecutor(commands);
         getCommand("a1").setExecutor(commands);
         getCommand("afk").setExecutor(commands);
+        getCommand("rename").setExecutor(commands);
 
         getServer().getPluginManager().registerEvents(this, this);
     }

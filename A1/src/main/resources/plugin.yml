@@ -20,3 +20,6 @@ commands:
   afk:
     description: "Toggle AFK status"
     usage: "/<command>"
+  rename:
+    description: "Allows players to rename their held item"
+    usage: "/<command> <displayName | -reset>"
