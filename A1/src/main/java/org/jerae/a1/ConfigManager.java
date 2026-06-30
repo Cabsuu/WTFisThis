@@ -6,6 +6,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class ConfigManager {
 
@@ -34,9 +36,12 @@ public class ConfigManager {
             String configVersion = config.getString("config-version");
             if (configVersion == null || !configVersion.equals(pluginVersion)) {
                 File oldFile = new File(plugin.getDataFolder(), "config.yml.old");
-                if (oldFile.exists()) oldFile.delete();
-                configFile.renameTo(oldFile);
-                plugin.saveResource("config.yml", false);
+                try {
+                    Files.move(configFile.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    plugin.getLogger().severe("Could not backup config.yml");
+                }
+                plugin.saveResource("config.yml", true);
                 FileConfiguration newConfig = YamlConfiguration.loadConfiguration(configFile);
 
                 // Keep the current settings
@@ -64,9 +69,12 @@ public class ConfigManager {
             String messageVersion = messages.getString("message-version");
             if (messageVersion == null || !messageVersion.equals(pluginVersion)) {
                 File oldFile = new File(plugin.getDataFolder(), "message.yml.old");
-                if (oldFile.exists()) oldFile.delete();
-                messagesFile.renameTo(oldFile);
-                plugin.saveResource("message.yml", false);
+                try {
+                    Files.move(messagesFile.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    plugin.getLogger().severe("Could not backup message.yml");
+                }
+                plugin.saveResource("message.yml", true);
                 FileConfiguration newMessages = YamlConfiguration.loadConfiguration(messagesFile);
 
                 // Keep the current settings

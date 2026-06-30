@@ -6,6 +6,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jerae.a2.A2API;
@@ -162,7 +164,12 @@ public class Commands implements CommandExecutor {
             boolean hasRgb = player.hasPermission("a1.rename.rgb");
             boolean hasGradient = player.hasPermission("a1.rename.gradient");
 
-            meta.displayName(A2API.format(arg, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient));
+            Component formattedName = A2API.format(arg, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient);
+
+            // Apply italic: false so it doesn't default to italics when no explicit format is provided
+            Component nonItalicName = Component.empty().decoration(TextDecoration.ITALIC, false).append(formattedName);
+
+            meta.displayName(nonItalicName);
             item.setItemMeta(meta);
 
             MessageUtil.sendMessage(plugin, player, "item-renamed");
