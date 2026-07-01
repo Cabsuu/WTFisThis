@@ -23,7 +23,7 @@ item-rename-reset: "&eYou removed the custom name from your %item_material%."
 
 # Hat Feature
 no-hat-to-remove: "&cYou are not wearing a hat."
-hat-equipped: "&eYou are now wearing your %item_material% on your head."
+hat-equipped: "&eEnjoy your new hat!"
 hat-removed: "&eYou removed your hat."
 
 message-version: '${version}'
