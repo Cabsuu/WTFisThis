@@ -23,3 +23,6 @@ commands:
   rename:
     description: "Allows players to rename their held item"
     usage: "/<command> <displayName | -reset>"
+  hat:
+    description: "Wears an item from your selected item to your head"
+    usage: "/<command> [remove]"

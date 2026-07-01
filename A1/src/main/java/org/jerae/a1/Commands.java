@@ -176,6 +176,65 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
+        if (command.getName().equalsIgnoreCase("hat")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+            if (!player.hasPermission("a1.hat")) {
+                MessageUtil.sendMessage(plugin, player, "no-permission");
+                return true;
+            }
+
+            if (args.length == 1 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("r"))) {
+                ItemStack helmet = player.getInventory().getHelmet();
+                if (helmet == null || helmet.getType().isAir()) {
+                    MessageUtil.sendMessage(plugin, player, "no-hat-to-remove");
+                    return true;
+                }
+                player.getInventory().setHelmet(null);
+                java.util.HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(helmet);
+                if (!leftOvers.isEmpty()) {
+                    for (ItemStack leftOver : leftOvers.values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
+                    }
+                }
+                MessageUtil.sendMessage(plugin, player, "hat-removed");
+                return true;
+            }
+
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            if (mainHand == null || mainHand.getType().isAir() || !mainHand.getType().isItem()) {
+                MessageUtil.sendMessage(plugin, player, "no-item-in-hand");
+                return true;
+            }
+
+            ItemStack currentHelmet = player.getInventory().getHelmet();
+            ItemStack toWear = mainHand.clone();
+            toWear.setAmount(1);
+
+            mainHand.setAmount(mainHand.getAmount() - 1);
+            if (mainHand.getAmount() <= 0) {
+                player.getInventory().setItemInMainHand(null);
+            } else {
+                player.getInventory().setItemInMainHand(mainHand);
+            }
+
+            player.getInventory().setHelmet(toWear);
+
+            if (currentHelmet != null && !currentHelmet.getType().isAir()) {
+                java.util.HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(currentHelmet);
+                if (!leftOvers.isEmpty()) {
+                    for (ItemStack leftOver : leftOvers.values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
+                    }
+                }
+            }
+
+            MessageUtil.sendMessage(plugin, player, "hat-equipped");
+            return true;
+        }
+
         if (command.getName().equalsIgnoreCase("a1")) {
             if (args.length == 0) {
                 sender.sendMessage("Usage: /a1 <version|reload>");

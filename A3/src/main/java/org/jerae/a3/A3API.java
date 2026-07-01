@@ -75,6 +75,13 @@ public class A3API {
         if (processed.contains("%item_material%")) {
             ItemStack item = player.getInventory().getItemInMainHand();
             String matName = (item != null && item.getType().isItem()) ? item.getType().name() : "AIR";
+            if (!matName.equals("AIR")) {
+                matName = java.util.Arrays.stream(matName.toLowerCase().split("_"))
+                    .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
+                    .collect(java.util.stream.Collectors.joining(" "));
+            } else {
+                matName = "Air";
+            }
             processed = processed.replace("%item_material%", matName);
         }
 
