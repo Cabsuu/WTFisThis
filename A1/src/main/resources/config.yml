@@ -1,4 +1,5 @@
 # Plugin Configuration
 # Do not touch this
 config-version: '${version}'
+
 afk-cooldown: 3

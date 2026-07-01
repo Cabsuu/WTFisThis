@@ -70,6 +70,7 @@ public class ConfigManager {
             }
             plugin.saveResource(resourceName, true);
             FileConfiguration newConfig = YamlConfiguration.loadConfiguration(file);
+            newConfig.options().copyHeader(true);
 
             for (String key : currentConfig.getKeys(true)) {
                 if (!key.equals(versionKey) && !(currentConfig.get(key) instanceof ConfigurationSection)) {

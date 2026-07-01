@@ -74,7 +74,21 @@ public class A3API {
         // Item placeholders
         if (processed.contains("%item_material%")) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            String matName = (item != null && item.getType().isItem()) ? item.getType().name() : "AIR";
+            String matName = "Air";
+            if (item != null && item.getType().isItem()) {
+                String rawName = item.getType().name();
+                String[] parts = rawName.split("_");
+                StringBuilder matSb = new StringBuilder();
+                for (String part : parts) {
+                    if (part.isEmpty()) continue;
+                    matSb.append(Character.toUpperCase(part.charAt(0)));
+                    if (part.length() > 1) {
+                        matSb.append(part.substring(1).toLowerCase());
+                    }
+                    matSb.append(" ");
+                }
+                matName = matSb.toString().trim();
+            }
             processed = processed.replace("%item_material%", matName);
         }
 

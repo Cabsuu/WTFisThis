@@ -212,6 +212,59 @@ public class Commands implements CommandExecutor {
             }
         }
 
+        if (command.getName().equalsIgnoreCase("hat")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+
+            if (!player.hasPermission("a1.hat")) {
+                MessageUtil.sendMessage(plugin, player, "no-permission");
+                return true;
+            }
+
+            if (args.length > 0 && args[0].equalsIgnoreCase("remove")) {
+                ItemStack helmet = player.getInventory().getHelmet();
+                if (helmet == null || helmet.getType().isAir()) {
+                    MessageUtil.sendMessage(plugin, player, "hat-empty-head");
+                    return true;
+                }
+                player.getInventory().setHelmet(null);
+                for (ItemStack overflow : player.getInventory().addItem(helmet).values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), overflow);
+                }
+                MessageUtil.sendMessage(plugin, player, "hat-removed");
+                return true;
+            }
+
+            ItemStack hand = player.getInventory().getItemInMainHand();
+            if (hand.getType().isAir()) {
+                MessageUtil.sendMessage(plugin, player, "no-item-in-hand");
+                return true;
+            }
+
+            ItemStack toEquip = hand.clone();
+            toEquip.setAmount(1);
+
+            ItemStack currentHelmet = player.getInventory().getHelmet();
+            player.getInventory().setHelmet(toEquip);
+
+            hand.setAmount(hand.getAmount() - 1);
+            if (hand.getAmount() > 0) {
+                player.getInventory().setItemInMainHand(hand);
+            } else {
+                player.getInventory().setItemInMainHand(null);
+            }
+
+            if (currentHelmet != null && !currentHelmet.getType().isAir()) {
+                for (ItemStack overflow : player.getInventory().addItem(currentHelmet).values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), overflow);
+                }
+            }
+            MessageUtil.sendMessage(plugin, player, "hat-equipped");
+            return true;
+        }
+
         return false;
     }
 }
