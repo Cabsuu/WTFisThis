@@ -1,16 +1,29 @@
+# Nickname Feature
 nickname-set: "&eYour nickname changed to %player_displayname%&e!"
 nickname-reset: "&eYou no longer have a nickname."
 nickname-set-other: "&e%otherplayer_username_<player>%'s nickname changed to %otherplayer_displayname_<player>%&e!"
 nickname-reset-other: "&e%otherplayer_username_<player>% no longer has a nickname."
+
+# General Messages
 no-permission: "&cYou do not have permission to use this command."
 plugin-reloaded: "&aPlugin successfully reloaded."
 version-message: "&bA1 Version: %a1_version%"
+
+# AFK Feature
 afk-enabled: "&7You are now AFK."
 afk-disabled: "&7You are no longer AFK."
 afk-cooldown-msg: "&cPlease wait %a1.cooldown.afk% seconds before using this command again."
 afk-broadcast-enabled: "&7%player_username% is now AFK."
 afk-broadcast-disabled: "&7%player_username% is no longer AFK."
+
+# Rename Feature
 no-item-in-hand: "&cYou are not holding any item."
 item-renamed: "&eYou renamed your %item_material% to %item_displayname%&e."
 item-rename-reset: "&eYou removed the custom name from your %item_material%."
+
+# Hat Feature
+no-hat-to-remove: "&cYou are not wearing a hat."
+hat-equipped: "&eEnjoy your new hat!"
+hat-removed: "&eYou removed your hat."
+
 message-version: '${version}'

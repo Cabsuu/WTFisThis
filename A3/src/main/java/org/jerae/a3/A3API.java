@@ -71,15 +71,23 @@ public class A3API {
         matcher.appendTail(sb);
         processed = sb.toString();
 
-        // Item placeholders
-        if (processed.contains("%item_material%")) {
-            ItemStack item = player.getInventory().getItemInMainHand();
-            String matName = (item != null && item.getType().isItem()) ? item.getType().name() : "AIR";
-            processed = processed.replace("%item_material%", matName);
-        }
-
         // Apply colors globally using A2 API. We assume maximum features allowed here as requested.
         Component parsed = A2API.format(processed, true, true, true, true, true);
+
+        // Item placeholders
+        if (message.contains("%item_material%")) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            Component matName;
+            if (item != null && item.getType().isItem() && !item.getType().isAir()) {
+                matName = Component.translatable(item.getType().translationKey());
+            } else {
+                matName = Component.text("Air");
+            }
+            parsed = parsed.replaceText(TextReplacementConfig.builder()
+                .matchLiteral("%item_material%")
+                .replacement(matName)
+                .build());
+        }
 
         if (message.contains("%item_displayname%")) {
             ItemStack item = player.getInventory().getItemInMainHand();

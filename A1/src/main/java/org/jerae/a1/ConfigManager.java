@@ -45,7 +45,7 @@ public class ConfigManager {
             return YamlConfiguration.loadConfiguration(file);
         }
 
-        FileConfiguration currentConfig = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(file);
         String currentVersion = currentConfig.getString(versionKey);
 
         boolean needsUpdate = currentVersion == null || !currentVersion.equals(pluginVersion);
@@ -69,7 +69,8 @@ public class ConfigManager {
                 plugin.getLogger().severe("Could not backup " + resourceName);
             }
             plugin.saveResource(resourceName, true);
-            FileConfiguration newConfig = YamlConfiguration.loadConfiguration(file);
+            YamlConfiguration newConfig = YamlConfiguration.loadConfiguration(file);
+            newConfig.options().copyHeader(true);
 
             for (String key : currentConfig.getKeys(true)) {
                 if (!key.equals(versionKey) && !(currentConfig.get(key) instanceof ConfigurationSection)) {
