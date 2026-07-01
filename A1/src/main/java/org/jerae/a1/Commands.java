@@ -5,6 +5,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jerae.a2.A2API;
 import org.jerae.a3.A3API;
@@ -113,6 +117,62 @@ public class Commands implements CommandExecutor {
                 MessageUtil.sendMessage(plugin, player, "afk-disabled");
                 plugin.broadcastAfkStatus(player, false);
             }
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("rename")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+
+            if (!player.hasPermission("a1.rename")) {
+                MessageUtil.sendMessage(plugin, player, "no-permission");
+                return true;
+            }
+
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if (item.getType().isAir() || !item.getType().isItem()) {
+                MessageUtil.sendMessage(plugin, player, "no-item-in-hand");
+                return true;
+            }
+
+            if (args.length == 0) {
+                player.sendMessage("Usage: /rename <displayName | -reset>");
+                return true;
+            }
+
+            String arg = String.join(" ", args);
+            ItemMeta meta = item.getItemMeta();
+            if (meta == null) {
+                // Highly unlikely for standard items, but just in case
+                meta = Bukkit.getItemFactory().getItemMeta(item.getType());
+            }
+
+            if (arg.equalsIgnoreCase("-reset") || arg.equalsIgnoreCase("-r")) {
+                if (meta != null) {
+                    meta.displayName(null);
+                    item.setItemMeta(meta);
+                    MessageUtil.sendMessage(plugin, player, "item-rename-reset");
+                }
+                return true;
+            }
+
+            boolean hasColor = player.hasPermission("a1.rename.color");
+            boolean hasFormat = player.hasPermission("a1.rename.format");
+            boolean hasObfuscated = player.hasPermission("a1.rename.obfuscated");
+            boolean hasRgb = player.hasPermission("a1.rename.rgb");
+            boolean hasGradient = player.hasPermission("a1.rename.gradient");
+
+            Component formattedName = A2API.format(arg, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient);
+
+            // Apply italic: false so it doesn't default to italics when no explicit format is provided
+            Component nonItalicName = Component.empty().decoration(TextDecoration.ITALIC, false).append(formattedName);
+
+            meta.displayName(nonItalicName);
+            item.setItemMeta(meta);
+
+            MessageUtil.sendMessage(plugin, player, "item-renamed");
             return true;
         }
 

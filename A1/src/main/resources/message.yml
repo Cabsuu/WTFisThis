@@ -10,4 +10,7 @@ afk-disabled: "&7You are no longer AFK."
 afk-cooldown-msg: "&cPlease wait %a1.cooldown.afk% seconds before using this command again."
 afk-broadcast-enabled: "&7%player_username% is now AFK."
 afk-broadcast-disabled: "&7%player_username% is no longer AFK."
+no-item-in-hand: "&cYou are not holding any item."
+item-renamed: "&eYou renamed your %item_material% to %item_displayname%&e."
+item-rename-reset: "&eYou removed the custom name from your %item_material%."
 message-version: '${version}'
