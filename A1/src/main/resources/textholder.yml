@@ -1,0 +1,14 @@
+## Here's an example of a textholder ##
+example:
+   text: "&nhere"
+   click-event:
+      enabled: true
+      type: "suggest_command"
+      line: "/me Example"
+   hover-event:
+      enabled: true
+      type: "show_text"
+      line: "<&b:&9>Click me"
+   use-in-chat: true
+
+textholder-version: '${version}'

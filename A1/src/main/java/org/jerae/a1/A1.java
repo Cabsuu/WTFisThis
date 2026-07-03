@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
 import org.jerae.a2.A2API;
 import org.jerae.a3.A3API;
 
@@ -28,7 +30,7 @@ public final class A1 extends JavaPlugin implements Listener {
         A3API.registerCooldownProvider("a1", A1API::getCooldown);
 
         Commands commands = new Commands(this);
-        getCommand("nickname").setExecutor(commands);
+        getCommand("nick").setExecutor(commands);
         getCommand("a1").setExecutor(commands);
         getCommand("afk").setExecutor(commands);
         getCommand("rename").setExecutor(commands);
@@ -106,5 +108,30 @@ public final class A1 extends JavaPlugin implements Listener {
             MessageUtil.sendMessage(this, event.getPlayer(), "afk-disabled");
             broadcastAfkStatus(event.getPlayer(), false);
         }
+    }
+
+    @EventHandler
+    public void onPlayerChat(AsyncChatEvent event) {
+        Component message = event.message();
+
+        if (configManager != null && configManager.getTextholders() != null) {
+            org.bukkit.configuration.file.FileConfiguration textholders = configManager.getTextholders();
+            message = message.replaceText(net.kyori.adventure.text.TextReplacementConfig.builder()
+                .match("\\{([a-zA-Z0-9_-]+)\\}")
+                .replacement((matchResult, builder) -> {
+                    String tag = matchResult.group(1);
+                    if (!textholders.contains(tag) || !textholders.getBoolean(tag + ".use-in-chat", false)) {
+                        return builder;
+                    }
+                    if (!event.getPlayer().hasPermission("a1.textholder." + tag)) {
+                        return builder;
+                    }
+                    Component tagComponent = Component.text("{" + tag + "}");
+                    return MessageUtil.parseTextholders(this, event.getPlayer(), tagComponent);
+                })
+                .build());
+        }
+
+        event.message(message);
     }
 }

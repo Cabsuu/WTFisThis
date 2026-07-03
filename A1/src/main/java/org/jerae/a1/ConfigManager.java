@@ -19,6 +19,8 @@ public class ConfigManager {
     private File configFile;
     private FileConfiguration messages;
     private File messagesFile;
+    private FileConfiguration textholders;
+    private File textholdersFile;
 
     public ConfigManager(Plugin plugin) {
         this.plugin = plugin;
@@ -37,6 +39,9 @@ public class ConfigManager {
 
         messagesFile = new File(plugin.getDataFolder(), "message.yml");
         messages = processConfig(messagesFile, "message.yml", "message-version", pluginVersion);
+
+        textholdersFile = new File(plugin.getDataFolder(), "textholder.yml");
+        textholders = processConfig(textholdersFile, "textholder.yml", "textholder-version", pluginVersion);
     }
 
     private FileConfiguration processConfig(File file, String resourceName, String versionKey, String pluginVersion) {
@@ -94,6 +99,10 @@ public class ConfigManager {
 
     public FileConfiguration getMessages() {
         return messages;
+    }
+
+    public FileConfiguration getTextholders() {
+        return textholders;
     }
 
     public void reload() {
