@@ -120,7 +120,18 @@ public final class A1 extends JavaPlugin implements Listener {
                 .match("\\[([a-zA-Z0-9_-]+)\\]")
                 .replacement((matchResult, builder) -> {
                     String tag = matchResult.group(1);
-                    if (!textholders.contains(tag) || !textholders.getBoolean(tag + ".use-in-chat", false)) {
+                    String configKey = tag;
+                    if (!textholders.contains(configKey)) {
+                        if (textholders.contains("true") && (tag.equalsIgnoreCase("yes") || tag.equalsIgnoreCase("true") || tag.equalsIgnoreCase("on"))) {
+                            configKey = "true";
+                        } else if (textholders.contains("false") && (tag.equalsIgnoreCase("no") || tag.equalsIgnoreCase("false") || tag.equalsIgnoreCase("off"))) {
+                            configKey = "false";
+                        } else {
+                            return builder;
+                        }
+                    }
+
+                    if (!textholders.getBoolean(configKey + ".use-in-chat", false)) {
                         return builder;
                     }
                     if (!event.getPlayer().hasPermission("a1.textholder." + tag)) {

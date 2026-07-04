@@ -19,15 +19,24 @@ public class MessageUtil {
             .replacement((matchResult, builder) -> {
                 String tag = matchResult.group(1);
 
-                if (!textholdersConfig.contains(tag)) {
-                    return builder;
+                // Yaml parser might interpret "yes", "no", "on", "off" as boolean keys
+                String configKey = tag;
+                if (!textholdersConfig.contains(configKey)) {
+                    // Try exact boolean match workaround if user typed "yes" or "no" or "true" or "false"
+                    if (textholdersConfig.contains("true") && (tag.equalsIgnoreCase("yes") || tag.equalsIgnoreCase("true") || tag.equalsIgnoreCase("on"))) {
+                        configKey = "true";
+                    } else if (textholdersConfig.contains("false") && (tag.equalsIgnoreCase("no") || tag.equalsIgnoreCase("false") || tag.equalsIgnoreCase("off"))) {
+                        configKey = "false";
+                    } else {
+                        return builder;
+                    }
                 }
 
                 if (!player.hasPermission("a1.textholder." + tag)) {
                     return builder;
                 }
 
-                ConfigurationSection section = textholdersConfig.getConfigurationSection(tag);
+                ConfigurationSection section = textholdersConfig.getConfigurationSection(configKey);
                 if (section == null) {
                     return builder;
                 }
