@@ -38,10 +38,10 @@ public class ConfigManager {
         config = processConfig(configFile, "config.yml", "config-version", pluginVersion);
 
         messagesFile = new File(plugin.getDataFolder(), "message.yml");
-        messages = processConfig(messagesFile, "message.yml", "message-version", pluginVersion);
+        messages = processConfig(messagesFile, "message.yml", null, pluginVersion);
 
         textholdersFile = new File(plugin.getDataFolder(), "textholder.yml");
-        textholders = processConfig(textholdersFile, "textholder.yml", "textholder-version", pluginVersion);
+        textholders = processConfig(textholdersFile, "textholder.yml", null, pluginVersion);
     }
 
     private FileConfiguration processConfig(File file, String resourceName, String versionKey, String pluginVersion) {
@@ -51,9 +51,12 @@ public class ConfigManager {
         }
 
         YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(file);
-        String currentVersion = currentConfig.getString(versionKey);
+        boolean needsUpdate = false;
 
-        boolean needsUpdate = currentVersion == null || !currentVersion.equals(pluginVersion);
+        if (versionKey != null) {
+            String currentVersion = currentConfig.getString(versionKey);
+            needsUpdate = currentVersion == null || !currentVersion.equals(pluginVersion);
+        }
 
         InputStream defaultStream = plugin.getResource(resourceName);
         if (defaultStream != null) {
@@ -78,7 +81,7 @@ public class ConfigManager {
             newConfig.options().copyHeader(true);
 
             for (String key : currentConfig.getKeys(true)) {
-                if (!key.equals(versionKey) && !(currentConfig.get(key) instanceof ConfigurationSection)) {
+                if ((versionKey == null || !key.equals(versionKey)) && !(currentConfig.get(key) instanceof ConfigurationSection)) {
                     newConfig.set(key, currentConfig.get(key));
                 }
             }

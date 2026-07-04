@@ -10,5 +10,3 @@ example:
       type: "show_text"
       line: "<&b:&9>Click me"
    use-in-chat: true
-
-textholder-version: '${version}'

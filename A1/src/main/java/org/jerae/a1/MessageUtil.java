@@ -15,7 +15,7 @@ public class MessageUtil {
         FileConfiguration textholdersConfig = plugin.getConfigManager().getTextholders();
 
         return input.replaceText(TextReplacementConfig.builder()
-            .match("\\{([a-zA-Z0-9_-]+)\\}")
+            .match("\\[([a-zA-Z0-9_-]+)\\]")
             .replacement((matchResult, builder) -> {
                 String tag = matchResult.group(1);
 

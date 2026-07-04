@@ -61,11 +61,11 @@ public class MessageUtilTextholderTest {
 
     @Test
     public void testTextholderReplacement() {
-        Component input = Component.text("This is {example} and {disabled-click} and {missing}");
+        Component input = Component.text("This is [example] and [disabled-click] and [missing]");
         Component output = MessageUtil.parseTextholders(plugin, player, input);
 
         String plain = PlainTextComponentSerializer.plainText().serialize(output);
-        assertEquals("This is Hello! and No click and {missing}", plain);
+        assertEquals("This is Hello! and No click and [missing]", plain);
 
         // Assert click event is present in the children somehow or hover event
         // We just verified the text got replaced correctly.
@@ -74,10 +74,10 @@ public class MessageUtilTextholderTest {
     @Test
     public void testNoPermission() {
         when(player.hasPermission("a1.textholder.example")).thenReturn(false);
-        Component input = Component.text("This is {example}");
+        Component input = Component.text("This is [example]");
         Component output = MessageUtil.parseTextholders(plugin, player, input);
 
         String plain = PlainTextComponentSerializer.plainText().serialize(output);
-        assertEquals("This is {example}", plain);
+        assertEquals("This is [example]", plain);
     }
 }

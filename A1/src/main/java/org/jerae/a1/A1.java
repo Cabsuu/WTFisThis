@@ -117,7 +117,7 @@ public final class A1 extends JavaPlugin implements Listener {
         if (configManager != null && configManager.getTextholders() != null) {
             org.bukkit.configuration.file.FileConfiguration textholders = configManager.getTextholders();
             message = message.replaceText(net.kyori.adventure.text.TextReplacementConfig.builder()
-                .match("\\{([a-zA-Z0-9_-]+)\\}")
+                .match("\\[([a-zA-Z0-9_-]+)\\]")
                 .replacement((matchResult, builder) -> {
                     String tag = matchResult.group(1);
                     if (!textholders.contains(tag) || !textholders.getBoolean(tag + ".use-in-chat", false)) {
@@ -126,7 +126,7 @@ public final class A1 extends JavaPlugin implements Listener {
                     if (!event.getPlayer().hasPermission("a1.textholder." + tag)) {
                         return builder;
                     }
-                    Component tagComponent = Component.text("{" + tag + "}");
+                    Component tagComponent = Component.text("[" + tag + "]");
                     return MessageUtil.parseTextholders(this, event.getPlayer(), tagComponent);
                 })
                 .build());
