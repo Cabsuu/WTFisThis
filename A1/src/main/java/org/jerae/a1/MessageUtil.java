@@ -8,7 +8,9 @@ public class MessageUtil {
     public static void sendMessage(A1 plugin, Player player, String path) {
         String msg = plugin.getConfigManager().getMessages().getString(path);
         if (msg != null && !msg.isEmpty()) {
-            player.sendMessage(A3API.parse(player, msg));
+            net.kyori.adventure.text.Component parsed = A3API.parse(player, msg);
+            parsed = plugin.getTextholderManager().parseTextholders(player, parsed, false);
+            player.sendMessage(parsed);
         }
     }
 
@@ -16,7 +18,9 @@ public class MessageUtil {
         String msg = plugin.getConfigManager().getMessages().getString(path);
         if (msg != null && !msg.isEmpty()) {
             msg = msg.replace("<player>", target.getName());
-            player.sendMessage(A3API.parse(player, msg));
+            net.kyori.adventure.text.Component parsed = A3API.parse(player, msg);
+            parsed = plugin.getTextholderManager().parseTextholders(player, parsed, false);
+            player.sendMessage(parsed);
         }
     }
 }

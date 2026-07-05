@@ -19,6 +19,8 @@ public class ConfigManager {
     private File configFile;
     private FileConfiguration messages;
     private File messagesFile;
+    private FileConfiguration textholders;
+    private File textholdersFile;
 
     public ConfigManager(Plugin plugin) {
         this.plugin = plugin;
@@ -37,6 +39,9 @@ public class ConfigManager {
 
         messagesFile = new File(plugin.getDataFolder(), "message.yml");
         messages = processConfig(messagesFile, "message.yml", "message-version", pluginVersion);
+
+        textholdersFile = new File(plugin.getDataFolder(), "textholder.yml");
+        textholders = processConfig(textholdersFile, "textholder.yml", null, null);
     }
 
     private FileConfiguration processConfig(File file, String resourceName, String versionKey, String pluginVersion) {
@@ -46,9 +51,12 @@ public class ConfigManager {
         }
 
         YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(file);
-        String currentVersion = currentConfig.getString(versionKey);
 
-        boolean needsUpdate = currentVersion == null || !currentVersion.equals(pluginVersion);
+        boolean needsUpdate = false;
+        if (versionKey != null) {
+            String currentVersion = currentConfig.getString(versionKey);
+            needsUpdate = currentVersion == null || !currentVersion.equals(pluginVersion);
+        }
 
         InputStream defaultStream = plugin.getResource(resourceName);
         if (defaultStream != null) {
@@ -73,7 +81,7 @@ public class ConfigManager {
             newConfig.options().copyHeader(true);
 
             for (String key : currentConfig.getKeys(true)) {
-                if (!key.equals(versionKey) && !(currentConfig.get(key) instanceof ConfigurationSection)) {
+                if ((versionKey == null || !key.equals(versionKey)) && !(currentConfig.get(key) instanceof ConfigurationSection)) {
                     newConfig.set(key, currentConfig.get(key));
                 }
             }
@@ -94,6 +102,10 @@ public class ConfigManager {
 
     public FileConfiguration getMessages() {
         return messages;
+    }
+
+    public FileConfiguration getTextholders() {
+        return textholders;
     }
 
     public void reload() {

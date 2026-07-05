@@ -25,7 +25,7 @@ public class A3API {
         cooldownProviders.put(pluginName.toLowerCase(), provider);
     }
 
-    public static Component parse(Player player, String message) {
+    public static String parseToString(Player player, String message) {
         String processed = message;
 
         if (processed.contains("%player_username%")) {
@@ -70,6 +70,12 @@ public class A3API {
         }
         matcher.appendTail(sb);
         processed = sb.toString();
+
+        return processed;
+    }
+
+    public static Component parse(Player player, String message) {
+        String processed = parseToString(player, message);
 
         // Apply colors globally using A2 API. We assume maximum features allowed here as requested.
         Component parsed = A2API.format(processed, true, true, true, true, true);
