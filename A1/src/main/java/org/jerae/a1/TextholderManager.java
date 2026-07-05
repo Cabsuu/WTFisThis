@@ -45,8 +45,8 @@ public class TextholderManager {
                         Component comp = A3API.parse(player, text);
 
                         if (isTrue(holder, "click-event")) {
-                            String type = holder.getString("type", "");
-                            String line = holder.getString("line", "");
+                            String type = holder.getString("click-type", "");
+                            String line = holder.getString("click-line", "");
 
                             if (!type.isEmpty() && !line.isEmpty()) {
                                 String parsedLine = A3API.parseToString(player, line);

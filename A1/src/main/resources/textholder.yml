@@ -2,8 +2,8 @@
 example:
   text: "&nhere"
   click-event: true
-  type: "suggest_command"
-  line: "/me Example"
+  click-type: "suggest_command"
+  click-line: "/me Example"
   hover-event: true
   hover-type: "show_text"
   hover-line: "<&b:&9>Click me"
