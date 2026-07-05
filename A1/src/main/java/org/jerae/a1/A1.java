@@ -8,27 +8,31 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jerae.a2.A2API;
 import org.jerae.a3.A3API;
+import net.kyori.adventure.text.Component;
 
 public final class A1 extends JavaPlugin implements Listener {
 
     private ConfigManager configManager;
     private DataManager dataManager;
     private AfkManager afkManager;
+    private TextholderManager textholderManager;
 
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
         dataManager = new DataManager(this);
         afkManager = new AfkManager(this);
+        textholderManager = new TextholderManager(this);
 
         A1API.init(this);
         A3API.registerCooldownProvider("a1", A1API::getCooldown);
 
         Commands commands = new Commands(this);
-        getCommand("nickname").setExecutor(commands);
+        getCommand("nick").setExecutor(commands);
         getCommand("a1").setExecutor(commands);
         getCommand("afk").setExecutor(commands);
         getCommand("rename").setExecutor(commands);
@@ -54,6 +58,10 @@ public final class A1 extends JavaPlugin implements Listener {
 
     public AfkManager getAfkManager() {
         return afkManager;
+    }
+
+    public TextholderManager getTextholderManager() {
+        return textholderManager;
     }
 
     public void broadcastAfkStatus(Player afkPlayer, boolean isAfk) {
@@ -106,5 +114,12 @@ public final class A1 extends JavaPlugin implements Listener {
             MessageUtil.sendMessage(this, event.getPlayer(), "afk-disabled");
             broadcastAfkStatus(event.getPlayer(), false);
         }
+    }
+
+    @EventHandler
+    public void onAsyncChat(AsyncChatEvent event) {
+        Component message = event.message();
+        message = textholderManager.parseTextholders(event.getPlayer(), message, true);
+        event.message(message);
     }
 }
