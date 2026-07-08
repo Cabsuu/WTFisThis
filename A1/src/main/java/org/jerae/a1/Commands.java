@@ -74,8 +74,23 @@ public class Commands implements CommandExecutor {
             boolean hasRgb = player.hasPermission("a1.nick.rgb");
             boolean hasGradient = player.hasPermission("a1.nick.gradient");
 
+            Component formatted = A2API.format(arg, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient);
+
+            // Check for symbols
+            String plainText = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().stripTags(arg);
+            // Replace old formatting codes explicitly if they weren't stripped
+            plainText = plainText.replaceAll("(?i)&[0-9a-fk-or]", "");
+            plainText = plainText.replaceAll("(?i)&x([0-9a-f]{6})", "");
+
+            if (!plainText.matches("^[a-zA-Z0-9_]+$")) {
+                if (!player.hasPermission("a1.nick.symbol")) {
+                    MessageUtil.sendMessage(plugin, player, "no-permission");
+                    return true;
+                }
+            }
+
             // Format nickname via A2 API using player's permissions
-            target.displayName(A2API.format(arg, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient));
+            target.displayName(formatted);
             plugin.getDataManager().setNickname(target.getUniqueId(), arg);
 
             if (target.equals(player)) {

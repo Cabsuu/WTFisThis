@@ -9,7 +9,9 @@ public class MessageUtil {
         String msg = plugin.getConfigManager().getMessages().getString(path);
         if (msg != null && !msg.isEmpty()) {
             net.kyori.adventure.text.Component parsed = A3API.parse(player, msg);
-            parsed = plugin.getTextholderManager().parseTextholders(player, parsed, false);
+            if (plugin.getServer().getPluginManager().getPlugin("A4") != null) {
+                parsed = org.jerae.a4.A4API.parseTextholders(player, parsed, false, plugin.getConfigManager().getTextholders(), plugin.getLogger());
+            }
             player.sendMessage(parsed);
         }
     }
@@ -19,7 +21,9 @@ public class MessageUtil {
         if (msg != null && !msg.isEmpty()) {
             msg = msg.replace("<player>", target.getName());
             net.kyori.adventure.text.Component parsed = A3API.parse(player, msg);
-            parsed = plugin.getTextholderManager().parseTextholders(player, parsed, false);
+            if (plugin.getServer().getPluginManager().getPlugin("A4") != null) {
+                parsed = org.jerae.a4.A4API.parseTextholders(player, parsed, false, plugin.getConfigManager().getTextholders(), plugin.getLogger());
+            }
             player.sendMessage(parsed);
         }
     }

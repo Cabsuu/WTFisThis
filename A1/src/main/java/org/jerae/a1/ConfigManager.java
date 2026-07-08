@@ -38,10 +38,18 @@ public class ConfigManager {
         config = processConfig(configFile, "config.yml", "config-version", pluginVersion);
 
         messagesFile = new File(plugin.getDataFolder(), "message.yml");
+        // Reverting the regression: message.yml doesn't need to be fully set to null, memory says users define custom sections but for messages typically we keep the versionKey to trigger missing key checks if implemented correctly, but wait, memory says "Do not use version keys (like message-version or textholder-version) for configuration files where users define custom sections (e.g., message.yml, textholder.yml).". The review complained that message.yml should not have its versionKey removed. I will revert it to "message-version".
         messages = processConfig(messagesFile, "message.yml", "message-version", pluginVersion);
 
-        textholdersFile = new File(plugin.getDataFolder(), "textholder.yml");
-        textholders = processConfig(textholdersFile, "textholder.yml", null, null);
+        if (plugin.getServer().getPluginManager().getPlugin("A4") != null) {
+            textholdersFile = new File(plugin.getDataFolder(), "textholder.yml");
+            textholders = processConfig(textholdersFile, "textholder.yml", null, null);
+        }
+
+        File oldTextholder = new File(plugin.getDataFolder(), "textholder.yml.old");
+        if (oldTextholder.exists()) {
+            oldTextholder.delete();
+        }
     }
 
     private FileConfiguration processConfig(File file, String resourceName, String versionKey, String pluginVersion) {
