@@ -1,31 +1,22 @@
-package org.jerae.a1;
+package org.jerae.a4;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.jerae.a2.A2API;
 import org.jerae.a3.A3API;
 
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TextholderManager {
+public class A4API {
 
-    private final A1 plugin;
-
-    public TextholderManager(A1 plugin) {
-        this.plugin = plugin;
-    }
-
-    public Component parseTextholders(Player player, Component inputComponent, boolean isChat) {
-        ConfigurationSection section = plugin.getConfigManager().getTextholders();
+    public static Component parseTextholders(Player player, Component inputComponent, boolean isChat, ConfigurationSection section, Logger logger) {
         if (section == null) return inputComponent;
 
         Component result = inputComponent;
@@ -36,7 +27,7 @@ public class TextholderManager {
 
             if (isChat && !isTrue(holder, "use-in-chat")) continue;
 
-            if (!player.hasPermission("a1.textholder." + key)) continue;
+            if (!player.hasPermission("a4.textholder." + key)) continue;
 
             result = result.replaceText(TextReplacementConfig.builder()
                     .matchLiteral("[" + key + "]")
@@ -120,7 +111,9 @@ public class TextholderManager {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            plugin.getLogger().warning("Invalid JSON for show_item in textholder " + key);
+                                            if (logger != null) {
+                                                logger.warning("Invalid JSON for show_item in textholder " + key);
+                                            }
                                         }
                                     } else {
                                         // Plain item name like "iron_sword"
@@ -145,7 +138,7 @@ public class TextholderManager {
         return result;
     }
 
-    private boolean isTrue(ConfigurationSection section, String path) {
+    private static boolean isTrue(ConfigurationSection section, String path) {
         if (!section.contains(path)) return false;
         if (section.isBoolean(path)) {
             return section.getBoolean(path);
@@ -153,5 +146,4 @@ public class TextholderManager {
         String val = section.getString(path);
         return val != null && (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("on"));
     }
-
 }

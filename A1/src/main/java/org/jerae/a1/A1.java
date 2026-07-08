@@ -19,14 +19,12 @@ public final class A1 extends JavaPlugin implements Listener {
     private ConfigManager configManager;
     private DataManager dataManager;
     private AfkManager afkManager;
-    private TextholderManager textholderManager;
 
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
         dataManager = new DataManager(this);
         afkManager = new AfkManager(this);
-        textholderManager = new TextholderManager(this);
 
         A1API.init(this);
         A3API.registerCooldownProvider("a1", A1API::getCooldown);
@@ -58,10 +56,6 @@ public final class A1 extends JavaPlugin implements Listener {
 
     public AfkManager getAfkManager() {
         return afkManager;
-    }
-
-    public TextholderManager getTextholderManager() {
-        return textholderManager;
     }
 
     public void broadcastAfkStatus(Player afkPlayer, boolean isAfk) {
@@ -119,7 +113,9 @@ public final class A1 extends JavaPlugin implements Listener {
     @EventHandler
     public void onAsyncChat(AsyncChatEvent event) {
         Component message = event.message();
-        message = textholderManager.parseTextholders(event.getPlayer(), message, true);
+        if (getServer().getPluginManager().getPlugin("A4") != null) {
+            message = org.jerae.a4.A4API.parseTextholders(event.getPlayer(), message, true, configManager.getTextholders(), getLogger());
+        }
         event.message(message);
     }
 }

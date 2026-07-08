@@ -1,0 +1,8 @@
+name: A4
+description: A4 Plugin for Textholder feature
+version: '${version}'
+main: org.jerae.a4.A4
+api-version: '26.2'
+load: POSTWORLD
+authors: [Jerae]
+depend: [A2, A3]
