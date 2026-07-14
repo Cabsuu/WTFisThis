@@ -21,6 +21,8 @@ public class ConfigManager {
     private File messagesFile;
     private FileConfiguration textholders;
     private File textholdersFile;
+    private FileConfiguration dialogs;
+    private File dialogsFile;
 
     public ConfigManager(Plugin plugin) {
         this.plugin = plugin;
@@ -44,11 +46,19 @@ public class ConfigManager {
         if (plugin.getServer().getPluginManager().getPlugin("A4") != null) {
             textholdersFile = new File(plugin.getDataFolder(), "textholder.yml");
             textholders = processConfig(textholdersFile, "textholder.yml", null, null);
+
+            dialogsFile = new File(plugin.getDataFolder(), "dialog.yml");
+            dialogs = processConfig(dialogsFile, "dialog.yml", null, null);
         }
 
         File oldTextholder = new File(plugin.getDataFolder(), "textholder.yml.old");
         if (oldTextholder.exists()) {
             oldTextholder.delete();
+        }
+
+        File oldDialogs = new File(plugin.getDataFolder(), "dialog.yml.old");
+        if (oldDialogs.exists()) {
+            oldDialogs.delete();
         }
     }
 
@@ -114,6 +124,10 @@ public class ConfigManager {
 
     public FileConfiguration getTextholders() {
         return textholders;
+    }
+
+    public FileConfiguration getDialogs() {
+        return dialogs;
     }
 
     public void reload() {

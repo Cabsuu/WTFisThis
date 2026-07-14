@@ -54,6 +54,28 @@ public class A4API {
                                     case "open_url":
                                         comp = comp.clickEvent(ClickEvent.openUrl(parsedLine));
                                         break;
+                                    case "show_dialog":
+                                        String namespace = "minecraft";
+                                        String id = parsedLine;
+                                        if (parsedLine.contains(":")) {
+                                            String[] parts = parsedLine.split(":", 2);
+                                            namespace = parts[0];
+                                            id = parts[1];
+                                        }
+                                        final String finalNamespace = namespace;
+                                        final String finalId = id;
+
+                                        class KeyedDialog implements net.kyori.adventure.dialog.DialogLike, net.kyori.adventure.key.Keyed {
+                                            private final net.kyori.adventure.key.Key key;
+                                            public KeyedDialog(net.kyori.adventure.key.Key k) { this.key = k; }
+                                            @Override
+                                            public net.kyori.adventure.key.Key key() { return key; }
+                                            @Override
+                                            public String toString() { return key.asString(); }
+                                        }
+
+                                        comp = comp.clickEvent(ClickEvent.showDialog(new KeyedDialog(net.kyori.adventure.key.Key.key(finalNamespace, finalId))));
+                                        break;
                                 }
                             }
                         }

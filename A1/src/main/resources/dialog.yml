@@ -1,0 +1,40 @@
+# Example of the dialog #
+dialog:
+  example1:
+    type: "confirmation"
+    title: "&bDialog 1"
+    external_title: ""
+    body:
+      - type: "message"
+        contents: ""
+        width: 200
+      - type: "item"
+        item: "stone_sword"
+        description:
+          contents: ""
+          width: ""
+        show_decorations: "false"
+        show_tooltip: "true"
+        width: 16
+        height: 16
+    inputs:
+      key1:
+        type: "boolean"
+        label: ""
+        initial: "true"
+        on-true: ""
+        on-false: ""
+    can-close-with-escape: true
+    after-action: close
+    yes:
+      label: "Example label"
+      tooltip: "This is a tooltip"
+      width: 150
+      action:
+        type: ""
+    no:
+      label: ""
+      tooltip: ""
+      width: 150
+      action:
+        type: ""
