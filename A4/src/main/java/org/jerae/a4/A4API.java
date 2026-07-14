@@ -65,16 +65,18 @@ public class A4API {
                                         final String finalNamespace = namespace;
                                         final String finalId = id;
 
-                                        class KeyedDialog implements net.kyori.adventure.dialog.DialogLike, net.kyori.adventure.key.Keyed {
-                                            private final net.kyori.adventure.key.Key key;
-                                            public KeyedDialog(net.kyori.adventure.key.Key k) { this.key = k; }
+                                        class PaperDialog implements io.papermc.paper.dialog.Dialog {
+                                            private final org.bukkit.NamespacedKey key;
+                                            public PaperDialog(org.bukkit.NamespacedKey k) { this.key = k; }
+                                            @Override
+                                            public org.bukkit.NamespacedKey getKey() { return key; }
                                             @Override
                                             public net.kyori.adventure.key.Key key() { return key; }
                                             @Override
                                             public String toString() { return key.asString(); }
                                         }
 
-                                        comp = comp.clickEvent(ClickEvent.showDialog(new KeyedDialog(net.kyori.adventure.key.Key.key(finalNamespace, finalId))));
+                                        comp = comp.clickEvent(ClickEvent.showDialog(new PaperDialog(new org.bukkit.NamespacedKey(finalNamespace, finalId))));
                                         break;
                                 }
                             }
