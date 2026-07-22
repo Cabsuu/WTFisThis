@@ -1,6 +1,7 @@
 package org.jerae.a1;
 
 import org.bukkit.entity.Player;
+import net.kyori.adventure.text.Component;
 
 public class A1API {
 
@@ -13,5 +14,10 @@ public class A1API {
     public static double getCooldown(Player player, String command) {
         if (plugin == null || plugin.getAfkManager() == null) return 0.0;
         return plugin.getAfkManager().getRemainingCooldown(player, command);
+    }
+
+    public static Component getDialog(Player player, String dialogId) {
+        if (plugin == null || plugin.getDialogManager() == null) return Component.empty();
+        return plugin.getDialogManager().getParsedDialog(player, dialogId);
     }
 }

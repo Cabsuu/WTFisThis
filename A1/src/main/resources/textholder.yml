@@ -8,3 +8,10 @@ example:
   hover-type: "show_text"
   hover-line: "<&b:&9>Click me"
   use-in-chat: true
+
+dialog_example:
+  text: "&bClick here for dialog"
+  click-event: true
+  click-type: "show_dialog"
+  click-line: "a1:example_dialog"
+  use-in-chat: true

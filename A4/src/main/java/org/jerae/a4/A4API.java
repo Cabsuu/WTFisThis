@@ -54,6 +54,9 @@ public class A4API {
                                     case "open_url":
                                         comp = comp.clickEvent(ClickEvent.openUrl(parsedLine));
                                         break;
+                                    case "show_dialog":
+                                        comp = comp.clickEvent(ClickEvent.runCommand("/a1 dialog " + parsedLine));
+                                        break;
                                 }
                             }
                         }

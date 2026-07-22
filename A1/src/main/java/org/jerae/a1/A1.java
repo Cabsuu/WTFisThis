@@ -19,12 +19,14 @@ public final class A1 extends JavaPlugin implements Listener {
     private ConfigManager configManager;
     private DataManager dataManager;
     private AfkManager afkManager;
+    private DialogManager dialogManager;
 
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
         dataManager = new DataManager(this);
         afkManager = new AfkManager(this);
+        dialogManager = new DialogManager(this);
 
         A1API.init(this);
         A3API.registerCooldownProvider("a1", A1API::getCooldown);
@@ -56,6 +58,10 @@ public final class A1 extends JavaPlugin implements Listener {
 
     public AfkManager getAfkManager() {
         return afkManager;
+    }
+
+    public DialogManager getDialogManager() {
+        return dialogManager;
     }
 
     public void broadcastAfkStatus(Player afkPlayer, boolean isAfk) {
