@@ -10,7 +10,6 @@ import org.jerae.a3.A3API;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +48,7 @@ public class DialogManager {
     public Component getParsedDialog(Player player, String dialogId) {
         String rawText = dialogs.get(dialogId);
         if (rawText == null) {
-            return Component.empty();
+            return null;
         }
 
         String parsedPlaceholder = A3API.parseToString(player, rawText);

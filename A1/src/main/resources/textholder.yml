@@ -13,5 +13,5 @@ dialog_example:
   text: "&bClick here for dialog"
   click-event: true
   click-type: "show_dialog"
-  click-line: "a1:example_dialog"
+  click-line: "example_dialog"
   use-in-chat: true
