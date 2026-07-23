@@ -1,8 +1,16 @@
 package org.jerae.a1;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.dialog.DialogLike;
+import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.registry.data.dialog.DialogBase;
+import io.papermc.paper.registry.data.dialog.body.DialogBody;
+import io.papermc.paper.registry.data.dialog.type.DialogType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jerae.a2.A2API;
@@ -18,7 +26,7 @@ import java.util.logging.Level;
 public class DialogManager {
 
     private final Plugin plugin;
-    private Map<String, String> dialogs = new HashMap<>();
+    private Map<String, JsonObject> dialogs = new HashMap<>();
     private final Gson gson = new Gson();
 
     public DialogManager(Plugin plugin) {
@@ -35,8 +43,8 @@ public class DialogManager {
         }
 
         try (FileReader reader = new FileReader(file)) {
-            Type type = new TypeToken<Map<String, String>>() {}.getType();
-            Map<String, String> loaded = gson.fromJson(reader, type);
+            Type type = new TypeToken<Map<String, JsonObject>>() {}.getType();
+            Map<String, JsonObject> loaded = gson.fromJson(reader, type);
             if (loaded != null) {
                 dialogs.putAll(loaded);
             }
@@ -45,14 +53,44 @@ public class DialogManager {
         }
     }
 
-    public Component getParsedDialog(Player player, String dialogId) {
-        String rawText = dialogs.get(dialogId);
-        if (rawText == null) {
+    public DialogLike getParsedDialog(Player player, String dialogId) {
+        JsonObject dialogObj = dialogs.get(dialogId);
+        if (dialogObj == null) {
             return null;
         }
 
-        String parsedPlaceholder = A3API.parseToString(player, rawText);
+        String titleStr = "Dialog";
+        if (dialogObj.has("title") && !dialogObj.get("title").isJsonNull()) {
+            titleStr = dialogObj.get("title").getAsString();
+        }
 
-        return A2API.format(parsedPlaceholder, true, true, true, true, true);
+        String bodyStr = "";
+        if (dialogObj.has("body") && dialogObj.get("body").isJsonArray()) {
+            JsonArray bodyArray = dialogObj.getAsJsonArray("body");
+            if (bodyArray.size() > 0) {
+                JsonObject firstBody = bodyArray.get(0).getAsJsonObject();
+                if (firstBody.has("contents") && !firstBody.get("contents").isJsonNull()) {
+                    bodyStr = firstBody.get("contents").getAsString();
+                }
+            }
+        } else if (dialogObj.has("body") && dialogObj.get("body").isJsonObject()) {
+            JsonObject bodyObj = dialogObj.getAsJsonObject("body");
+            if (bodyObj.has("contents") && !bodyObj.get("contents").isJsonNull()) {
+                bodyStr = bodyObj.get("contents").getAsString();
+            }
+        }
+
+        String parsedTitlePlaceholder = A3API.parseToString(player, titleStr);
+        Component finalTitle = A2API.format(parsedTitlePlaceholder, true, true, true, true, true);
+
+        String parsedBodyPlaceholder = A3API.parseToString(player, bodyStr);
+        Component finalBody = A2API.format(parsedBodyPlaceholder, true, true, true, true, true);
+
+        return Dialog.create(factory -> {
+            factory.empty().base(DialogBase.builder(finalTitle)
+                        .body(java.util.List.of(DialogBody.plainMessage(finalBody)))
+                        .build())
+                   .type(DialogType.notice());
+        });
     }
 }

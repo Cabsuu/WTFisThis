@@ -262,9 +262,9 @@ public class Commands implements CommandExecutor {
                     if (dialogId.contains(":")) {
                         dialogId = dialogId.substring(dialogId.indexOf(":") + 1);
                     }
-                    Component dialogComponent = A1API.getDialog(player, dialogId);
-                    if (dialogComponent != null) {
-                        player.sendMessage(dialogComponent);
+                    net.kyori.adventure.dialog.DialogLike dialog = A1API.getDialog(player, dialogId);
+                    if (dialog != null) {
+                        player.showDialog(dialog);
                     }
                 }
                 return true;
