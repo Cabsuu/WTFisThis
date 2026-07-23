@@ -258,7 +258,11 @@ public class Commands implements CommandExecutor {
 
             if (args[0].equalsIgnoreCase("dialog") && args.length >= 2) {
                 if (sender instanceof Player player) {
-                    Component dialogComponent = A1API.getDialog(player, args[1]);
+                    String dialogId = args[1];
+                    if (dialogId.contains(":")) {
+                        dialogId = dialogId.substring(dialogId.indexOf(":") + 1);
+                    }
+                    Component dialogComponent = A1API.getDialog(player, dialogId);
                     if (dialogComponent != null) {
                         player.sendMessage(dialogComponent);
                     }
