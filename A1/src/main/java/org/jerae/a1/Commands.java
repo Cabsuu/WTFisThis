@@ -264,7 +264,14 @@ public class Commands implements CommandExecutor {
                     }
                     net.kyori.adventure.dialog.DialogLike dialog = A1API.getDialog(player, dialogId);
                     if (dialog != null) {
-                        player.showDialog(dialog);
+                        try {
+                            player.showDialog(dialog);
+                        } catch (Exception e) {
+                            plugin.getLogger().log(java.util.logging.Level.SEVERE, "Failed to show dialog to player", e);
+                            player.sendMessage("§cAn error occurred while showing the dialog.");
+                        }
+                    } else {
+                        player.sendMessage("§cDialog '" + dialogId + "' not found.");
                     }
                 }
                 return true;

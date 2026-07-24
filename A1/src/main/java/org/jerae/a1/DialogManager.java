@@ -43,10 +43,26 @@ public class DialogManager {
         }
 
         try (FileReader reader = new FileReader(file)) {
-            Type type = new TypeToken<Map<String, JsonObject>>() {}.getType();
-            Map<String, JsonObject> loaded = gson.fromJson(reader, type);
-            if (loaded != null) {
-                dialogs.putAll(loaded);
+            JsonObject root = gson.fromJson(reader, JsonObject.class);
+            if (root != null) {
+                for (Map.Entry<String, JsonElement> entry : root.entrySet()) {
+                    if (entry.getValue().isJsonObject()) {
+                        dialogs.put(entry.getKey(), entry.getValue().getAsJsonObject());
+                    } else if (entry.getValue().isJsonPrimitive()) {
+                        // Migrate old string format in memory
+                        String text = entry.getValue().getAsString();
+                        JsonObject migrated = new JsonObject();
+                        migrated.addProperty("type", "minecraft:notice");
+                        migrated.addProperty("title", "Dialog");
+                        JsonArray bodyArray = new JsonArray();
+                        JsonObject bodyObj = new JsonObject();
+                        bodyObj.addProperty("type", "minecraft:plain_message");
+                        bodyObj.addProperty("contents", text);
+                        bodyArray.add(bodyObj);
+                        migrated.add("body", bodyArray);
+                        dialogs.put(entry.getKey(), migrated);
+                    }
+                }
             }
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to load dialogs.json", e);
@@ -90,7 +106,7 @@ public class DialogManager {
             factory.empty().base(DialogBase.builder(finalTitle)
                         .body(java.util.List.of(DialogBody.plainMessage(finalBody)))
                         .build())
-                   .type(DialogType.notice());
+                   .type(DialogType.notice(io.papermc.paper.registry.data.dialog.ActionButton.builder(net.kyori.adventure.text.Component.text("OK")).build()));
         });
     }
 }
