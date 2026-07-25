@@ -13,6 +13,15 @@ import org.jerae.a3.A3API;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
+import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.registry.data.dialog.DialogBase;
+import io.papermc.paper.registry.data.dialog.body.DialogBody;
+import io.papermc.paper.registry.data.dialog.type.DialogType;
+import io.papermc.paper.registry.data.dialog.ActionButton;
+import java.util.List;
+import java.util.ArrayList;
 
 public class A4API {
 
@@ -53,6 +62,9 @@ public class A4API {
                                         break;
                                     case "open_url":
                                         comp = comp.clickEvent(ClickEvent.openUrl(parsedLine));
+                                        break;
+                                    case "show_dialog":
+                                        comp = comp.clickEvent(ClickEvent.runCommand("/a1dialog " + parsedLine));
                                         break;
                                 }
                             }
@@ -145,5 +157,34 @@ public class A4API {
         }
         String val = section.getString(path);
         return val != null && (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("on"));
+    }
+
+    public static void showDialog(Player player, String dialogId, JsonObject dialogConfig) {
+        if (dialogConfig == null) return;
+
+        String titleStr = dialogConfig.has("title") ? dialogConfig.get("title").getAsString() : "";
+        Component titleComponent = A3API.parse(player, titleStr);
+
+        List<DialogBody> bodies = new ArrayList<>();
+        if (dialogConfig.has("body") && dialogConfig.get("body").isJsonArray()) {
+            for (JsonElement element : dialogConfig.getAsJsonArray("body")) {
+                if (element.isJsonObject()) {
+                    JsonObject bodyObj = element.getAsJsonObject();
+                    if (bodyObj.has("contents")) {
+                        String bodyText = bodyObj.get("contents").getAsString();
+                        bodies.add(DialogBody.plainMessage(A3API.parse(player, bodyText)));
+                    }
+                }
+            }
+        }
+
+        Dialog dialog = Dialog.create(builder -> builder.empty()
+            .base(DialogBase.builder(titleComponent)
+                .body(bodies)
+                .build())
+            .type(DialogType.notice(ActionButton.builder(Component.text("OK")).build()))
+        );
+
+        player.showDialog(dialog);
     }
 }

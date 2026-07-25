@@ -28,3 +28,6 @@ commands:
   hat:
     description: "Wears an item from your selected item to your head"
     usage: "/<command> [remove]"
+  a1dialog:
+    description: "Internal command to open dialogs"
+    usage: "/<command> <id>"

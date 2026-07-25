@@ -1,0 +1,11 @@
+{
+  "example_dialog": {
+    "type": "notice",
+    "title": "&aExample Dialog",
+    "body": [
+      {
+        "contents": "Hello [player_username]! This is a test dialog."
+      }
+    ]
+  }
+}
