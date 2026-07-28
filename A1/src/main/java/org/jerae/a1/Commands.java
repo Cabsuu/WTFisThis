@@ -267,10 +267,10 @@ public class Commands implements CommandExecutor {
                 if (elem.isJsonObject()) {
                     org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject(), dialogs);
                 } else {
-                    player.sendMessage("Couldn't load " + dialogId + ".");
+                    MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
                 }
             } else {
-                player.sendMessage("Couldn't load " + dialogId + ".");
+                MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
             }
             return true;
         }

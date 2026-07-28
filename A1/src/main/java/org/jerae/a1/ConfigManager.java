@@ -160,7 +160,7 @@ public class ConfigManager {
                 }
             }
         } catch (Exception e) {
-            plugin.getLogger().severe("Could not load dialogs.json");
+            plugin.getLogger().severe("Could not load dialogs.json: " + e.getMessage());
             dialogs = new JsonObject();
         }
     }

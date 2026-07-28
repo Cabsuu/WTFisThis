@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import org.bukkit.Material;
+import io.papermc.paper.registry.data.dialog.body.PlainMessageDialogBody;
 
 public class A4API {
 
@@ -173,6 +175,36 @@ public class A4API {
         }
     }
 
+    private static DialogBody parseDialogBody(Player player, JsonObject bodyObj) {
+        String bodyType = bodyObj.has("type") ? bodyObj.get("type").getAsString() : "plain_message";
+
+        if (bodyType.equals("item")) {
+            String itemId = "stone";
+            if (bodyObj.has("item") && bodyObj.get("item").isJsonObject()) {
+                JsonObject itemObj = bodyObj.getAsJsonObject("item");
+                if (itemObj.has("id")) {
+                    itemId = itemObj.get("id").getAsString();
+                }
+            }
+            Material mat = Material.matchMaterial(itemId);
+            if (mat == null) mat = Material.STONE;
+            ItemStack itemStack = new ItemStack(mat);
+
+            PlainMessageDialogBody descBody = null;
+            if (bodyObj.has("description") && bodyObj.get("description").isJsonObject()) {
+                JsonObject descObj = bodyObj.getAsJsonObject("description");
+                if (descObj.has("contents")) {
+                    descBody = DialogBody.plainMessage(A3API.parse(player, descObj.get("contents").getAsString()));
+                }
+            }
+
+            return DialogBody.item(itemStack).description(descBody).build();
+        } else {
+            String bodyText = bodyObj.has("contents") ? bodyObj.get("contents").getAsString() : "";
+            return DialogBody.plainMessage(A3API.parse(player, bodyText));
+        }
+    }
+
     public static Dialog buildDialog(Player player, String dialogId, JsonObject dialogConfig, JsonObject fullConfig, Set<String> visited) {
         if (dialogConfig == null) return null;
         if (visited.contains(dialogId)) {
@@ -193,18 +225,12 @@ public class A4API {
                 for (JsonElement element : bodyElement.getAsJsonArray()) {
                     if (element.isJsonObject()) {
                         JsonObject bodyObj = element.getAsJsonObject();
-                        if (bodyObj.has("contents")) {
-                            String bodyText = bodyObj.get("contents").getAsString();
-                            bodies.add(DialogBody.plainMessage(A3API.parse(player, bodyText)));
-                        }
+                        bodies.add(parseDialogBody(player, bodyObj));
                     }
                 }
             } else if (bodyElement.isJsonObject()) {
                 JsonObject bodyObj = bodyElement.getAsJsonObject();
-                if (bodyObj.has("contents")) {
-                    String bodyText = bodyObj.get("contents").getAsString();
-                    bodies.add(DialogBody.plainMessage(A3API.parse(player, bodyText)));
-                }
+                bodies.add(parseDialogBody(player, bodyObj));
             }
         }
 
