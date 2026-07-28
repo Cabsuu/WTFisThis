@@ -236,7 +236,7 @@ public class A4API {
                 }
             }
             dialogType = DialogType.multiAction(actions).build();
-        } else if (type.equals("dialog_list") || type.equals("dialoglist") || type.equals("ialog_list")) {
+        } else if (type.equals("dialog_list") || type.equals("dialoglist")) {
             List<Dialog> builtDialogs = new ArrayList<>();
             if (dialogConfig.has("dialogs") && dialogConfig.get("dialogs").isJsonArray() && fullConfig != null) {
                 for (JsonElement element : dialogConfig.getAsJsonArray("dialogs")) {
