@@ -29,6 +29,9 @@ import java.util.Set;
 import java.util.HashSet;
 import org.bukkit.Material;
 import io.papermc.paper.registry.data.dialog.body.PlainMessageDialogBody;
+import io.papermc.paper.registry.data.dialog.body.ItemDialogBody;
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput;
 
 public class A4API {
 
@@ -198,7 +201,15 @@ public class A4API {
                 }
             }
 
-            return DialogBody.item(itemStack).description(descBody).build();
+            ItemDialogBody.Builder itemBuilder = DialogBody.item(itemStack).description(descBody);
+            if (bodyObj.has("width") && bodyObj.get("width").isJsonPrimitive()) {
+                itemBuilder.width(bodyObj.get("width").getAsInt());
+            }
+            if (bodyObj.has("height") && bodyObj.get("height").isJsonPrimitive()) {
+                itemBuilder.height(bodyObj.get("height").getAsInt());
+            }
+
+            return itemBuilder.build();
         } else {
             String bodyText = bodyObj.has("contents") ? bodyObj.get("contents").getAsString() : "";
             return DialogBody.plainMessage(A3API.parse(player, bodyText));
@@ -287,10 +298,72 @@ public class A4API {
             dialogType = DialogType.notice(ActionButton.builder(A3API.parse(player, btnLabel)).build());
         }
 
+        DialogBase.Builder baseBuilder = DialogBase.builder(titleComponent).body(bodies);
+
+        if (dialogConfig.has("external_title")) {
+            baseBuilder.externalTitle(A3API.parse(player, dialogConfig.get("external_title").getAsString()));
+        }
+
+        if (dialogConfig.has("can_close_with_escape")) {
+            baseBuilder.canCloseWithEscape(dialogConfig.get("can_close_with_escape").getAsBoolean());
+        }
+
+        if (dialogConfig.has("pause")) {
+            baseBuilder.pause(dialogConfig.get("pause").getAsBoolean());
+        }
+
+        if (dialogConfig.has("after_action")) {
+            String afterAction = dialogConfig.get("after_action").getAsString().toLowerCase();
+            if (afterAction.equals("close")) {
+                baseBuilder.afterAction(DialogBase.DialogAfterAction.CLOSE);
+            } else if (afterAction.equals("none")) {
+                baseBuilder.afterAction(DialogBase.DialogAfterAction.NONE);
+            } else if (afterAction.equals("wait_for_response")) {
+                baseBuilder.afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE);
+            }
+        }
+
+        List<DialogInput> inputs = new ArrayList<>();
+        if (dialogConfig.has("inputs") && dialogConfig.get("inputs").isJsonArray()) {
+            for (JsonElement element : dialogConfig.getAsJsonArray("inputs")) {
+                if (element.isJsonObject()) {
+                    JsonObject inputObj = element.getAsJsonObject();
+                    String inputKey = inputObj.has("key") ? inputObj.get("key").getAsString() : "key";
+                    Component inputLabel = inputObj.has("label") ? A3API.parse(player, inputObj.get("label").getAsString()) : Component.empty();
+                    String inputType = inputObj.has("type") ? inputObj.get("type").getAsString() : "text";
+
+                    if (inputType.equals("bool")) {
+                        inputs.add(DialogInput.bool(inputKey, inputLabel).build());
+                    } else if (inputType.equals("number_range")) {
+                        float start = inputObj.has("start") ? inputObj.get("start").getAsFloat() : 0f;
+                        float end = inputObj.has("end") ? inputObj.get("end").getAsFloat() : 100f;
+                        inputs.add(DialogInput.numberRange(inputKey, inputLabel, start, end).build());
+                    } else if (inputType.equals("single_option")) {
+                        List<SingleOptionDialogInput.OptionEntry> entries = new ArrayList<>();
+                        if (inputObj.has("entries") && inputObj.get("entries").isJsonArray()) {
+                            for (JsonElement entryElem : inputObj.getAsJsonArray("entries")) {
+                                if (entryElem.isJsonObject()) {
+                                    JsonObject entryObj = entryElem.getAsJsonObject();
+                                    String val = entryObj.has("value") ? entryObj.get("value").getAsString() : "";
+                                    Component lbl = entryObj.has("label") ? A3API.parse(player, entryObj.get("label").getAsString()) : Component.text(val);
+                                    boolean initial = entryObj.has("initial") && entryObj.get("initial").getAsBoolean();
+                                    entries.add(SingleOptionDialogInput.OptionEntry.create(val, lbl, initial));
+                                }
+                            }
+                        }
+                        inputs.add(DialogInput.singleOption(inputKey, inputLabel, entries).build());
+                    } else if (inputType.equals("text")) {
+                        inputs.add(DialogInput.text(inputKey, inputLabel).build());
+                    }
+                }
+            }
+        }
+        if (!inputs.isEmpty()) {
+            baseBuilder.inputs(inputs);
+        }
+
         return Dialog.create(builder -> builder.empty()
-            .base(DialogBase.builder(titleComponent)
-                .body(bodies)
-                .build())
+            .base(baseBuilder.build())
             .type(dialogType)
         );
     }
