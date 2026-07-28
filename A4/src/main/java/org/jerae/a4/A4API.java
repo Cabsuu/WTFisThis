@@ -178,11 +178,35 @@ public class A4API {
             }
         }
 
+        String type = dialogConfig.has("type") ? dialogConfig.get("type").getAsString().toLowerCase() : "notice";
+
+        DialogType dialogType;
+        if (type.equals("confirmation")) {
+            String yesLabel = "Yes";
+            if (dialogConfig.has("yes") && dialogConfig.get("yes").isJsonObject() && dialogConfig.getAsJsonObject("yes").has("label")) {
+                yesLabel = dialogConfig.getAsJsonObject("yes").get("label").getAsString();
+            }
+            String noLabel = "No";
+            if (dialogConfig.has("no") && dialogConfig.get("no").isJsonObject() && dialogConfig.getAsJsonObject("no").has("label")) {
+                noLabel = dialogConfig.getAsJsonObject("no").get("label").getAsString();
+            }
+
+            ActionButton yesButton = ActionButton.builder(A3API.parse(player, yesLabel)).build();
+            ActionButton noButton = ActionButton.builder(A3API.parse(player, noLabel)).build();
+            dialogType = DialogType.confirmation(yesButton, noButton);
+        } else {
+            String btnLabel = "OK";
+            if (dialogConfig.has("button") && dialogConfig.get("button").isJsonObject() && dialogConfig.getAsJsonObject("button").has("label")) {
+                btnLabel = dialogConfig.getAsJsonObject("button").get("label").getAsString();
+            }
+            dialogType = DialogType.notice(ActionButton.builder(A3API.parse(player, btnLabel)).build());
+        }
+
         Dialog dialog = Dialog.create(builder -> builder.empty()
             .base(DialogBase.builder(titleComponent)
                 .body(bodies)
                 .build())
-            .type(DialogType.notice(ActionButton.builder(Component.text("OK")).build()))
+            .type(dialogType)
         );
 
         player.showDialog(dialog);
