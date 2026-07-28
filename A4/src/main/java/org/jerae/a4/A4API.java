@@ -20,8 +20,13 @@ import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import io.papermc.paper.registry.data.dialog.ActionButton;
+import io.papermc.paper.registry.set.RegistrySet;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.TypedKey;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 public class A4API {
 
@@ -159,21 +164,46 @@ public class A4API {
         return val != null && (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("on"));
     }
 
-    public static void showDialog(Player player, String dialogId, JsonObject dialogConfig) {
+    public static void showDialog(Player player, String dialogId, JsonObject dialogConfig, JsonObject fullConfig) {
         if (dialogConfig == null) return;
+        Set<String> visited = new HashSet<>();
+        Dialog dialog = buildDialog(player, dialogId, dialogConfig, fullConfig, visited);
+        if (dialog != null) {
+            player.showDialog(dialog);
+        }
+    }
+
+    public static Dialog buildDialog(Player player, String dialogId, JsonObject dialogConfig, JsonObject fullConfig, Set<String> visited) {
+        if (dialogConfig == null) return null;
+        if (visited.contains(dialogId)) {
+            if (player.getServer().getLogger() != null) {
+                player.getServer().getLogger().warning("Cyclic reference detected in dialogs.json for dialog: " + dialogId);
+            }
+            return null;
+        }
+        visited.add(dialogId);
 
         String titleStr = dialogConfig.has("title") ? dialogConfig.get("title").getAsString() : "";
         Component titleComponent = A3API.parse(player, titleStr);
 
         List<DialogBody> bodies = new ArrayList<>();
-        if (dialogConfig.has("body") && dialogConfig.get("body").isJsonArray()) {
-            for (JsonElement element : dialogConfig.getAsJsonArray("body")) {
-                if (element.isJsonObject()) {
-                    JsonObject bodyObj = element.getAsJsonObject();
-                    if (bodyObj.has("contents")) {
-                        String bodyText = bodyObj.get("contents").getAsString();
-                        bodies.add(DialogBody.plainMessage(A3API.parse(player, bodyText)));
+        if (dialogConfig.has("body")) {
+            JsonElement bodyElement = dialogConfig.get("body");
+            if (bodyElement.isJsonArray()) {
+                for (JsonElement element : bodyElement.getAsJsonArray()) {
+                    if (element.isJsonObject()) {
+                        JsonObject bodyObj = element.getAsJsonObject();
+                        if (bodyObj.has("contents")) {
+                            String bodyText = bodyObj.get("contents").getAsString();
+                            bodies.add(DialogBody.plainMessage(A3API.parse(player, bodyText)));
+                        }
                     }
+                }
+            } else if (bodyElement.isJsonObject()) {
+                JsonObject bodyObj = bodyElement.getAsJsonObject();
+                if (bodyObj.has("contents")) {
+                    String bodyText = bodyObj.get("contents").getAsString();
+                    bodies.add(DialogBody.plainMessage(A3API.parse(player, bodyText)));
                 }
             }
         }
@@ -194,6 +224,35 @@ public class A4API {
             ActionButton yesButton = ActionButton.builder(A3API.parse(player, yesLabel)).build();
             ActionButton noButton = ActionButton.builder(A3API.parse(player, noLabel)).build();
             dialogType = DialogType.confirmation(yesButton, noButton);
+        } else if (type.equals("multi_action") || type.equals("multiaction")) {
+            List<ActionButton> actions = new ArrayList<>();
+            if (dialogConfig.has("actions") && dialogConfig.get("actions").isJsonArray()) {
+                for (JsonElement element : dialogConfig.getAsJsonArray("actions")) {
+                    if (element.isJsonObject()) {
+                        JsonObject actionObj = element.getAsJsonObject();
+                        String label = actionObj.has("label") ? actionObj.get("label").getAsString() : "Action";
+                        actions.add(ActionButton.builder(A3API.parse(player, label)).build());
+                    }
+                }
+            }
+            dialogType = DialogType.multiAction(actions).build();
+        } else if (type.equals("dialog_list") || type.equals("dialoglist") || type.equals("ialog_list")) {
+            List<Dialog> builtDialogs = new ArrayList<>();
+            if (dialogConfig.has("dialogs") && dialogConfig.get("dialogs").isJsonArray() && fullConfig != null) {
+                for (JsonElement element : dialogConfig.getAsJsonArray("dialogs")) {
+                    if (element.isJsonPrimitive()) {
+                        String dialogName = element.getAsString();
+                        if (fullConfig.has(dialogName) && fullConfig.get(dialogName).isJsonObject()) {
+                            Dialog d = buildDialog(player, dialogName, fullConfig.getAsJsonObject(dialogName), fullConfig, new HashSet<>(visited));
+                            if (d != null) {
+                                builtDialogs.add(d);
+                            }
+                        }
+                    }
+                }
+            }
+            RegistrySet<Dialog> registrySet = RegistrySet.valueSet(RegistryKey.DIALOG, builtDialogs);
+            dialogType = DialogType.dialogList(registrySet).build();
         } else {
             String btnLabel = "OK";
             if (dialogConfig.has("button") && dialogConfig.get("button").isJsonObject() && dialogConfig.getAsJsonObject("button").has("label")) {
@@ -202,13 +261,11 @@ public class A4API {
             dialogType = DialogType.notice(ActionButton.builder(A3API.parse(player, btnLabel)).build());
         }
 
-        Dialog dialog = Dialog.create(builder -> builder.empty()
+        return Dialog.create(builder -> builder.empty()
             .base(DialogBase.builder(titleComponent)
                 .body(bodies)
                 .build())
             .type(dialogType)
         );
-
-        player.showDialog(dialog);
     }
 }

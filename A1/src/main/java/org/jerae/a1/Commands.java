@@ -265,7 +265,7 @@ public class Commands implements CommandExecutor {
             if (dialogs != null && dialogs.has(dialogId)) {
                 com.google.gson.JsonElement elem = dialogs.get(dialogId);
                 if (elem.isJsonObject()) {
-                    org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject());
+                    org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject(), dialogs);
                 }
             }
             return true;
