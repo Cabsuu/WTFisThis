@@ -266,7 +266,11 @@ public class Commands implements CommandExecutor {
                 com.google.gson.JsonElement elem = dialogs.get(dialogId);
                 if (elem.isJsonObject()) {
                     org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject(), dialogs);
+                } else {
+                    player.sendMessage("Couldn't load " + dialogId + ".");
                 }
+            } else {
+                player.sendMessage("Couldn't load " + dialogId + ".");
             }
             return true;
         }
