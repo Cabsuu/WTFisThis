@@ -1,11 +1,27 @@
 {
   "example_dialog": {
-    "type": "notice",
-    "title": "&aExample Dialog",
+    "type": "confirmation",
+    "title": "Example Dialog",
+    "external_title": "",
     "body": [
       {
-        "contents": "Hello [player_username]! This is a test dialog."
+        "type": "item",
+        "item": {
+          "id": "diamond"
+        },
+        "description": {
+          "contents": "Yes"
+        },
+        "width": 16,
+        "height": 16
       }
-    ]
+    ],
+    "inputs": [],
+    "yes": {
+      "label": "Yes"
+    },
+    "no": {
+      "label": "No"
+    }
   }
 }

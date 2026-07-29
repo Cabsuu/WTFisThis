@@ -203,10 +203,10 @@ public class A4API {
 
             ItemDialogBody.Builder itemBuilder = DialogBody.item(itemStack).description(descBody);
             if (bodyObj.has("width") && bodyObj.get("width").isJsonPrimitive()) {
-                itemBuilder.width(bodyObj.get("width").getAsInt());
+                itemBuilder = itemBuilder.width(bodyObj.get("width").getAsInt());
             }
             if (bodyObj.has("height") && bodyObj.get("height").isJsonPrimitive()) {
-                itemBuilder.height(bodyObj.get("height").getAsInt());
+                itemBuilder = itemBuilder.height(bodyObj.get("height").getAsInt());
             }
 
             return itemBuilder.build();
