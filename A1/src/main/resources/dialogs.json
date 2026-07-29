@@ -1,0 +1,27 @@
+{
+  "example_dialog": {
+    "type": "confirmation",
+    "title": "Example Dialog",
+    "external_title": "",
+    "body": [
+      {
+        "type": "item",
+        "item": {
+          "id": "diamond"
+        },
+        "description": {
+          "contents": "Yes"
+        },
+        "width": 16,
+        "height": 16
+      }
+    ],
+    "inputs": [],
+    "yes": {
+      "label": "Yes"
+    },
+    "no": {
+      "label": "No"
+    }
+  }
+}

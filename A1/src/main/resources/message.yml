@@ -26,4 +26,6 @@ no-hat-to-remove: "&cYou are not wearing a hat."
 hat-equipped: "&eEnjoy your new hat!"
 hat-removed: "&eYou removed your hat."
 
+dialog-load-error: "&cCouldn't load %dialog_id%."
+
 message-version: '${version}'

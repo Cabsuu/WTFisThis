@@ -250,6 +250,31 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
+        if (command.getName().equalsIgnoreCase("a1dialog")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+            if (args.length == 0) {
+                return true;
+            }
+
+            String dialogId = args[0];
+            com.google.gson.JsonObject dialogs = plugin.getConfigManager().getDialogs();
+
+            if (dialogs != null && dialogs.has(dialogId)) {
+                com.google.gson.JsonElement elem = dialogs.get(dialogId);
+                if (elem.isJsonObject()) {
+                    org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject(), dialogs);
+                } else {
+                    MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
+                }
+            } else {
+                MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
+            }
+            return true;
+        }
+
         if (command.getName().equalsIgnoreCase("a1")) {
             if (args.length == 0) {
                 sender.sendMessage("Usage: /a1 <version|reload>");

@@ -11,6 +11,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 public class ConfigManager {
 
@@ -21,6 +27,9 @@ public class ConfigManager {
     private File messagesFile;
     private FileConfiguration textholders;
     private File textholdersFile;
+    private JsonObject dialogs;
+    private File dialogsFile;
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public ConfigManager(Plugin plugin) {
         this.plugin = plugin;
@@ -50,6 +59,9 @@ public class ConfigManager {
         if (oldTextholder.exists()) {
             oldTextholder.delete();
         }
+
+        dialogsFile = new File(plugin.getDataFolder(), "dialogs.json");
+        loadDialogs();
     }
 
     private FileConfiguration processConfig(File file, String resourceName, String versionKey, String pluginVersion) {
@@ -114,6 +126,47 @@ public class ConfigManager {
 
     public FileConfiguration getTextholders() {
         return textholders;
+    }
+
+    public void loadDialogs() {
+        if (!dialogsFile.exists()) {
+            plugin.saveResource("dialogs.json", false);
+        }
+
+        try (FileReader reader = new FileReader(dialogsFile)) {
+            dialogs = JsonParser.parseReader(reader).getAsJsonObject();
+
+            boolean updated = false;
+            // Iterate over entries to perform graceful migration if necessary (as per memory)
+            for (String key : dialogs.keySet()) {
+                if (dialogs.get(key).isJsonPrimitive()) {
+                    JsonObject newObj = new JsonObject();
+                    newObj.addProperty("type", "notice");
+                    newObj.addProperty("title", "Dialog");
+                    com.google.gson.JsonArray bodyArray = new com.google.gson.JsonArray();
+                    JsonObject bodyObj = new JsonObject();
+                    bodyObj.addProperty("contents", dialogs.get(key).getAsString());
+                    bodyArray.add(bodyObj);
+                    newObj.add("body", bodyArray);
+
+                    dialogs.add(key, newObj);
+                    updated = true;
+                }
+            }
+
+            if (updated) {
+                try (FileWriter writer = new FileWriter(dialogsFile)) {
+                    gson.toJson(dialogs, writer);
+                }
+            }
+        } catch (Exception e) {
+            plugin.getLogger().severe("Could not load dialogs.json: " + e.getMessage());
+            dialogs = new JsonObject();
+        }
+    }
+
+    public JsonObject getDialogs() {
+        return dialogs;
     }
 
     public void reload() {
