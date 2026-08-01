@@ -194,11 +194,17 @@ public class A4API {
             ItemStack itemStack = new ItemStack(mat);
 
             PlainMessageDialogBody descBody = null;
-            if (bodyObj.has("description") && bodyObj.get("description").isJsonObject()) {
-                JsonObject descObj = bodyObj.getAsJsonObject("description");
-                if (descObj.has("contents")) {
-                    descBody = DialogBody.plainMessage(A3API.parse(player, descObj.get("contents").getAsString()));
+            if (bodyObj.has("description")) {
+                if (bodyObj.get("description").isJsonObject()) {
+                    JsonObject descObj = bodyObj.getAsJsonObject("description");
+                    if (descObj.has("contents")) {
+                        descBody = DialogBody.plainMessage(A3API.parse(player, descObj.get("contents").getAsString()));
+                    }
+                } else if (bodyObj.get("description").isJsonPrimitive()) {
+                    descBody = DialogBody.plainMessage(A3API.parse(player, bodyObj.get("description").getAsString()));
                 }
+            } else if (bodyObj.has("contents") && bodyObj.get("contents").isJsonPrimitive()) {
+                descBody = DialogBody.plainMessage(A3API.parse(player, bodyObj.get("contents").getAsString()));
             }
 
             ItemDialogBody.Builder itemBuilder = DialogBody.item(itemStack).description(descBody);
@@ -243,11 +249,15 @@ public class A4API {
                     if (element.isJsonObject()) {
                         JsonObject bodyObj = element.getAsJsonObject();
                         bodies.add(parseDialogBody(player, bodyObj));
+                    } else if (element.isJsonPrimitive()) {
+                        bodies.add(DialogBody.plainMessage(A3API.parse(player, element.getAsString())));
                     }
                 }
             } else if (bodyElement.isJsonObject()) {
                 JsonObject bodyObj = bodyElement.getAsJsonObject();
                 bodies.add(parseDialogBody(player, bodyObj));
+            } else if (bodyElement.isJsonPrimitive()) {
+                bodies.add(DialogBody.plainMessage(A3API.parse(player, bodyElement.getAsString())));
             }
         }
 

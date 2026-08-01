@@ -9,14 +9,13 @@
         "item": {
           "id": "diamond"
         },
-        "description": {
-          "contents": "Yes"
-        },
+        "description": "Yes",
         "width": 16,
         "height": 16,
         "show_decorations": true,
         "show_tooltip": false
-      }
+      },
+      "Additional raw string plain message body."
     ],
     "inputs": [
       {
