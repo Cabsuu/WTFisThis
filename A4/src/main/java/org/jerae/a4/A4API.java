@@ -197,14 +197,33 @@ public class A4API {
             if (bodyObj.has("description")) {
                 if (bodyObj.get("description").isJsonObject()) {
                     JsonObject descObj = bodyObj.getAsJsonObject("description");
+                    Component descContents = Component.empty();
                     if (descObj.has("contents")) {
-                        descBody = DialogBody.plainMessage(A3API.parse(player, descObj.get("contents").getAsString()));
+                        descContents = A3API.parse(player, descObj.get("contents").getAsString());
+                    }
+                    if (descObj.has("width") && descObj.get("width").isJsonPrimitive()) {
+                        descBody = DialogBody.plainMessage(descContents, descObj.get("width").getAsInt());
+                    } else {
+                        descBody = DialogBody.plainMessage(descContents);
                     }
                 } else if (bodyObj.get("description").isJsonPrimitive()) {
                     descBody = DialogBody.plainMessage(A3API.parse(player, bodyObj.get("description").getAsString()));
                 }
-            } else if (bodyObj.has("contents") && bodyObj.get("contents").isJsonPrimitive()) {
-                descBody = DialogBody.plainMessage(A3API.parse(player, bodyObj.get("contents").getAsString()));
+            } else if (bodyObj.has("contents")) {
+                if (bodyObj.get("contents").isJsonObject()) {
+                    JsonObject contentsObj = bodyObj.getAsJsonObject("contents");
+                    Component contentsCmp = Component.empty();
+                    if (contentsObj.has("contents")) contentsCmp = A3API.parse(player, contentsObj.get("contents").getAsString());
+                    else if (contentsObj.has("text")) contentsCmp = A3API.parse(player, contentsObj.get("text").getAsString());
+
+                    if (contentsObj.has("width") && contentsObj.get("width").isJsonPrimitive()) {
+                        descBody = DialogBody.plainMessage(contentsCmp, contentsObj.get("width").getAsInt());
+                    } else {
+                        descBody = DialogBody.plainMessage(contentsCmp);
+                    }
+                } else if (bodyObj.get("contents").isJsonPrimitive()) {
+                    descBody = DialogBody.plainMessage(A3API.parse(player, bodyObj.get("contents").getAsString()));
+                }
             }
 
             ItemDialogBody.Builder itemBuilder = DialogBody.item(itemStack).description(descBody);
