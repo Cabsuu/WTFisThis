@@ -249,18 +249,23 @@ public class A4API {
 
         DialogType dialogType;
         if (type.equals("confirmation")) {
-            String yesLabel = "Yes";
-            if (dialogConfig.has("yes") && dialogConfig.get("yes").isJsonObject() && dialogConfig.getAsJsonObject("yes").has("label")) {
-                yesLabel = dialogConfig.getAsJsonObject("yes").get("label").getAsString();
-            }
-            String noLabel = "No";
-            if (dialogConfig.has("no") && dialogConfig.get("no").isJsonObject() && dialogConfig.getAsJsonObject("no").has("label")) {
-                noLabel = dialogConfig.getAsJsonObject("no").get("label").getAsString();
+            ActionButton.Builder yesBuilder = ActionButton.builder(A3API.parse(player, "Yes"));
+            if (dialogConfig.has("yes") && dialogConfig.get("yes").isJsonObject()) {
+                JsonObject yesObj = dialogConfig.getAsJsonObject("yes");
+                if (yesObj.has("label")) yesBuilder = ActionButton.builder(A3API.parse(player, yesObj.get("label").getAsString()));
+                if (yesObj.has("width") && yesObj.get("width").isJsonPrimitive()) yesBuilder.width(yesObj.get("width").getAsInt());
+                if (yesObj.has("tooltip") && yesObj.get("tooltip").isJsonPrimitive()) yesBuilder.tooltip(A3API.parse(player, yesObj.get("tooltip").getAsString()));
             }
 
-            ActionButton yesButton = ActionButton.builder(A3API.parse(player, yesLabel)).build();
-            ActionButton noButton = ActionButton.builder(A3API.parse(player, noLabel)).build();
-            dialogType = DialogType.confirmation(yesButton, noButton);
+            ActionButton.Builder noBuilder = ActionButton.builder(A3API.parse(player, "No"));
+            if (dialogConfig.has("no") && dialogConfig.get("no").isJsonObject()) {
+                JsonObject noObj = dialogConfig.getAsJsonObject("no");
+                if (noObj.has("label")) noBuilder = ActionButton.builder(A3API.parse(player, noObj.get("label").getAsString()));
+                if (noObj.has("width") && noObj.get("width").isJsonPrimitive()) noBuilder.width(noObj.get("width").getAsInt());
+                if (noObj.has("tooltip") && noObj.get("tooltip").isJsonPrimitive()) noBuilder.tooltip(A3API.parse(player, noObj.get("tooltip").getAsString()));
+            }
+
+            dialogType = DialogType.confirmation(yesBuilder.build(), noBuilder.build());
         } else if (type.equals("multi_action") || type.equals("multiaction")) {
             List<ActionButton> actions = new ArrayList<>();
             if (dialogConfig.has("actions") && dialogConfig.get("actions").isJsonArray()) {
@@ -268,7 +273,10 @@ public class A4API {
                     if (element.isJsonObject()) {
                         JsonObject actionObj = element.getAsJsonObject();
                         String label = actionObj.has("label") ? actionObj.get("label").getAsString() : "Action";
-                        actions.add(ActionButton.builder(A3API.parse(player, label)).build());
+                        ActionButton.Builder actBuilder = ActionButton.builder(A3API.parse(player, label));
+                        if (actionObj.has("width") && actionObj.get("width").isJsonPrimitive()) actBuilder.width(actionObj.get("width").getAsInt());
+                        if (actionObj.has("tooltip") && actionObj.get("tooltip").isJsonPrimitive()) actBuilder.tooltip(A3API.parse(player, actionObj.get("tooltip").getAsString()));
+                        actions.add(actBuilder.build());
                     }
                 }
             }
@@ -291,11 +299,14 @@ public class A4API {
             RegistrySet<Dialog> registrySet = RegistrySet.valueSet(RegistryKey.DIALOG, builtDialogs);
             dialogType = DialogType.dialogList(registrySet).build();
         } else {
-            String btnLabel = "OK";
-            if (dialogConfig.has("button") && dialogConfig.get("button").isJsonObject() && dialogConfig.getAsJsonObject("button").has("label")) {
-                btnLabel = dialogConfig.getAsJsonObject("button").get("label").getAsString();
+            ActionButton.Builder btnBuilder = ActionButton.builder(A3API.parse(player, "OK"));
+            if (dialogConfig.has("button") && dialogConfig.get("button").isJsonObject()) {
+                JsonObject btnObj = dialogConfig.getAsJsonObject("button");
+                if (btnObj.has("label")) btnBuilder = ActionButton.builder(A3API.parse(player, btnObj.get("label").getAsString()));
+                if (btnObj.has("width") && btnObj.get("width").isJsonPrimitive()) btnBuilder.width(btnObj.get("width").getAsInt());
+                if (btnObj.has("tooltip") && btnObj.get("tooltip").isJsonPrimitive()) btnBuilder.tooltip(A3API.parse(player, btnObj.get("tooltip").getAsString()));
             }
-            dialogType = DialogType.notice(ActionButton.builder(A3API.parse(player, btnLabel)).build());
+            dialogType = DialogType.notice(btnBuilder.build());
         }
 
         DialogBase.Builder baseBuilder = DialogBase.builder(titleComponent).body(bodies);
@@ -333,11 +344,20 @@ public class A4API {
                     String inputType = inputObj.has("type") ? inputObj.get("type").getAsString() : "text";
 
                     if (inputType.equals("bool")) {
-                        inputs.add(DialogInput.bool(inputKey, inputLabel).build());
+                        var boolBuilder = DialogInput.bool(inputKey, inputLabel);
+                        if (inputObj.has("initial") && inputObj.get("initial").isJsonPrimitive()) boolBuilder.initial(inputObj.get("initial").getAsBoolean());
+                        if (inputObj.has("on_true") && inputObj.get("on_true").isJsonPrimitive()) boolBuilder.onTrue(inputObj.get("on_true").getAsString());
+                        if (inputObj.has("on_false") && inputObj.get("on_false").isJsonPrimitive()) boolBuilder.onFalse(inputObj.get("on_false").getAsString());
+                        inputs.add(boolBuilder.build());
                     } else if (inputType.equals("number_range")) {
                         float start = inputObj.has("start") ? inputObj.get("start").getAsFloat() : 0f;
                         float end = inputObj.has("end") ? inputObj.get("end").getAsFloat() : 100f;
-                        inputs.add(DialogInput.numberRange(inputKey, inputLabel, start, end).build());
+                        var numBuilder = DialogInput.numberRange(inputKey, inputLabel, start, end);
+                        if (inputObj.has("step") && inputObj.get("step").isJsonPrimitive()) numBuilder.step(inputObj.get("step").getAsFloat());
+                        if (inputObj.has("width") && inputObj.get("width").isJsonPrimitive()) numBuilder.width(inputObj.get("width").getAsInt());
+                        if (inputObj.has("initial") && inputObj.get("initial").isJsonPrimitive()) numBuilder.initial(inputObj.get("initial").getAsFloat());
+                        if (inputObj.has("label_format") && inputObj.get("label_format").isJsonPrimitive()) numBuilder.labelFormat(inputObj.get("label_format").getAsString());
+                        inputs.add(numBuilder.build());
                     } else if (inputType.equals("single_option")) {
                         List<SingleOptionDialogInput.OptionEntry> entries = new ArrayList<>();
                         if (inputObj.has("entries") && inputObj.get("entries").isJsonArray()) {
@@ -351,9 +371,17 @@ public class A4API {
                                 }
                             }
                         }
-                        inputs.add(DialogInput.singleOption(inputKey, inputLabel, entries).build());
+                        var singleOptBuilder = DialogInput.singleOption(inputKey, inputLabel, entries);
+                        if (inputObj.has("width") && inputObj.get("width").isJsonPrimitive()) singleOptBuilder.width(inputObj.get("width").getAsInt());
+                        if (inputObj.has("label_visible") && inputObj.get("label_visible").isJsonPrimitive()) singleOptBuilder.labelVisible(inputObj.get("label_visible").getAsBoolean());
+                        inputs.add(singleOptBuilder.build());
                     } else if (inputType.equals("text")) {
-                        inputs.add(DialogInput.text(inputKey, inputLabel).build());
+                        var textBuilder = DialogInput.text(inputKey, inputLabel);
+                        if (inputObj.has("width") && inputObj.get("width").isJsonPrimitive()) textBuilder.width(inputObj.get("width").getAsInt());
+                        if (inputObj.has("max_length") && inputObj.get("max_length").isJsonPrimitive()) textBuilder.maxLength(inputObj.get("max_length").getAsInt());
+                        if (inputObj.has("initial") && inputObj.get("initial").isJsonPrimitive()) textBuilder.initial(inputObj.get("initial").getAsString());
+                        if (inputObj.has("label_visible") && inputObj.get("label_visible").isJsonPrimitive()) textBuilder.labelVisible(inputObj.get("label_visible").getAsBoolean());
+                        inputs.add(textBuilder.build());
                     }
                 }
             }

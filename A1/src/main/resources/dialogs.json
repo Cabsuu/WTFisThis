@@ -16,12 +16,64 @@
         "height": 16
       }
     ],
-    "inputs": [],
+    "inputs": [
+      {
+        "key": "test_bool",
+        "type": "bool",
+        "label": "Enable Feature",
+        "initial": true,
+        "on_true": "Feature Enabled",
+        "on_false": "Feature Disabled"
+      },
+      {
+        "key": "test_number",
+        "type": "number_range",
+        "label": "Volume",
+        "start": 0.0,
+        "end": 100.0,
+        "step": 5.0,
+        "width": 200,
+        "initial": 50.0,
+        "label_format": "Volume: %s"
+      },
+      {
+        "key": "test_option",
+        "type": "single_option",
+        "label": "Difficulty",
+        "entries": [
+          {
+            "value": "easy",
+            "label": "Easy",
+            "initial": true
+          },
+          {
+            "value": "hard",
+            "label": "Hard",
+            "initial": false
+          }
+        ],
+        "width": 150,
+        "label_visible": true
+      },
+      {
+        "key": "test_text",
+        "type": "text",
+        "label": "Player Name",
+        "width": 100,
+        "max_length": 16,
+        "initial": "Steve",
+        "label_visible": false
+      }
+    ],
     "yes": {
-      "label": "Yes"
+      "label": "Yes",
+      "width": 50,
+      "tooltip": "Click to confirm"
     },
     "no": {
-      "label": "No"
+      "label": "No",
+      "width": 50,
+      "tooltip": "Click to decline"
     }
   }
 }
