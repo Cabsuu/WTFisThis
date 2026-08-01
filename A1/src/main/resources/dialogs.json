@@ -13,7 +13,9 @@
           "contents": "Yes"
         },
         "width": 16,
-        "height": 16
+        "height": 16,
+        "show_decorations": true,
+        "show_tooltip": false
       }
     ],
     "inputs": [

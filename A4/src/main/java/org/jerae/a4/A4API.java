@@ -208,6 +208,12 @@ public class A4API {
             if (bodyObj.has("height") && bodyObj.get("height").isJsonPrimitive()) {
                 itemBuilder = itemBuilder.height(bodyObj.get("height").getAsInt());
             }
+            if (bodyObj.has("show_decorations") && bodyObj.get("show_decorations").isJsonPrimitive()) {
+                itemBuilder = itemBuilder.showDecorations(bodyObj.get("show_decorations").getAsBoolean());
+            }
+            if (bodyObj.has("show_tooltip") && bodyObj.get("show_tooltip").isJsonPrimitive()) {
+                itemBuilder = itemBuilder.showTooltip(bodyObj.get("show_tooltip").getAsBoolean());
+            }
 
             return itemBuilder.build();
         } else {
