@@ -26,7 +26,19 @@ public class A3API {
     }
 
     public static String parseToString(Player player, String message) {
+        return parseToString(player, message, null);
+    }
+
+    public static String parseToString(Player player, String message, Map<String, String> extraPlaceholders) {
         String processed = message;
+
+        if (extraPlaceholders != null) {
+            for (Map.Entry<String, String> entry : extraPlaceholders.entrySet()) {
+                if (processed.contains(entry.getKey())) {
+                    processed = processed.replace(entry.getKey(), entry.getValue());
+                }
+            }
+        }
 
         if (processed.contains("%player_username%")) {
             processed = processed.replace("%player_username%", player.getName());
@@ -75,7 +87,11 @@ public class A3API {
     }
 
     public static Component parse(Player player, String message) {
-        String processed = parseToString(player, message);
+        return parse(player, message, null);
+    }
+
+    public static Component parse(Player player, String message, Map<String, String> extraPlaceholders) {
+        String processed = parseToString(player, message, extraPlaceholders);
 
         // Apply colors globally using A2 API. We assume maximum features allowed here as requested.
         Component parsed = A2API.format(processed, true, true, true, true, true);

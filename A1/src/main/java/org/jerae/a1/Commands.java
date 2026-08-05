@@ -286,15 +286,14 @@ public class Commands implements CommandExecutor {
 
             plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPA);
 
-            String reqSent = plugin.getConfigManager().getMessages().getString("tpa-request-sent");
-            if (reqSent != null) {
-                player.sendMessage(A3API.parse(target, reqSent.replace("%target%", target.getName())));
-            }
+            java.util.Map<String, String> pExtra = new java.util.HashMap<>();
+            pExtra.put("%target%", target.getName());
+            MessageUtil.sendMessageWithPlaceholders(plugin, player, "tpa-request-sent", pExtra);
 
-            String reqRecv = plugin.getConfigManager().getMessages().getString("tpa-request-received");
-            if (reqRecv != null) {
-                target.sendMessage(A3API.parse(player, reqRecv.replace("%player%", player.getName())));
-            }
+            java.util.Map<String, String> tExtra = new java.util.HashMap<>();
+            tExtra.put("%player%", player.getName());
+            MessageUtil.sendMessageWithPlaceholders(plugin, target, "tpa-request-received", tExtra);
+
             return true;
         }
 
@@ -319,15 +318,14 @@ public class Commands implements CommandExecutor {
 
             plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPAHERE);
 
-            String reqSent = plugin.getConfigManager().getMessages().getString("tpahere-request-sent");
-            if (reqSent != null) {
-                player.sendMessage(A3API.parse(target, reqSent.replace("%target%", target.getName())));
-            }
+            java.util.Map<String, String> pExtra = new java.util.HashMap<>();
+            pExtra.put("%target%", target.getName());
+            MessageUtil.sendMessageWithPlaceholders(plugin, player, "tpahere-request-sent", pExtra);
 
-            String reqRecv = plugin.getConfigManager().getMessages().getString("tpahere-request-received");
-            if (reqRecv != null) {
-                target.sendMessage(A3API.parse(player, reqRecv.replace("%player%", player.getName())));
-            }
+            java.util.Map<String, String> tExtra = new java.util.HashMap<>();
+            tExtra.put("%player%", player.getName());
+            MessageUtil.sendMessageWithPlaceholders(plugin, target, "tpahere-request-received", tExtra);
+
             return true;
         }
 
@@ -344,17 +342,13 @@ public class Commands implements CommandExecutor {
             for (Player target : Bukkit.getOnlinePlayers()) {
                 if (!target.equals(player)) {
                     plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPAHERE);
-                    String reqRecv = plugin.getConfigManager().getMessages().getString("tpahere-request-received");
-                    if (reqRecv != null) {
-                        target.sendMessage(A3API.parse(player, reqRecv.replace("%player%", player.getName())));
-                    }
+                    java.util.Map<String, String> tExtra = new java.util.HashMap<>();
+                    tExtra.put("%player%", player.getName());
+                    MessageUtil.sendMessageWithPlaceholders(plugin, target, "tpahere-request-received", tExtra);
                 }
             }
 
-            String reqSent = plugin.getConfigManager().getMessages().getString("tpaall-request-sent");
-            if (reqSent != null) {
-                player.sendMessage(A3API.parse(player, reqSent));
-            }
+            MessageUtil.sendMessage(plugin, player, "tpaall-request-sent");
             return true;
         }
 
@@ -431,10 +425,14 @@ public class Commands implements CommandExecutor {
                 if (elem.isJsonObject()) {
                     org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject(), dialogs);
                 } else {
-                    MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
+                    java.util.Map<String, String> extra = new java.util.HashMap<>();
+                    extra.put("%dialog_id%", dialogId);
+                    MessageUtil.sendMessageWithPlaceholders(plugin, player, "dialog-load-error", extra);
                 }
             } else {
-                MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
+                java.util.Map<String, String> extra = new java.util.HashMap<>();
+                extra.put("%dialog_id%", dialogId);
+                MessageUtil.sendMessageWithPlaceholders(plugin, player, "dialog-load-error", extra);
             }
             return true;
         }

@@ -7,7 +7,6 @@ example:
   hover-event: true
   hover-type: "show_text"
   hover-line: "<&b:&9>Click me"
-  use-in-chat: true
 
 tpyes:
   text: "&a[Accept]"
@@ -17,7 +16,6 @@ tpyes:
   hover-event: true
   hover-type: "show_text"
   hover-line: "&aClick to accept"
-  use-in-chat: false
 
 tpno:
   text: "&c[Deny]"
@@ -27,4 +25,3 @@ tpno:
   hover-event: true
   hover-type: "show_text"
   hover-line: "&cClick to deny"
-  use-in-chat: false
