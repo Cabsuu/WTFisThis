@@ -37,6 +37,13 @@ public final class A1 extends JavaPlugin implements Listener {
         getCommand("afk").setExecutor(commands);
         getCommand("rename").setExecutor(commands);
         getCommand("hat").setExecutor(commands);
+
+        getCommand("tpa").setExecutor(commands);
+        getCommand("tpahere").setExecutor(commands);
+        getCommand("tpyes").setExecutor(commands);
+        getCommand("tpno").setExecutor(commands);
+        getCommand("tpaall").setExecutor(commands);
+
         if (getServer().getPluginManager().getPlugin("A4") != null) {
             org.bukkit.command.PluginCommand a1dialogCmd = getCommand("a1dialog");
             if (a1dialogCmd != null) {
