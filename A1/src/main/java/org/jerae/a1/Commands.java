@@ -414,12 +414,12 @@ public class Commands implements CommandExecutor {
                     org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject(), dialogs);
                 } else {
                     java.util.Map<String, String> extra = new java.util.HashMap<>();
-                    extra.put("%dialog_id%", dialogId);
+                    extra.put("<id>", dialogId);
                     MessageUtil.sendMessageWithPlaceholders(plugin, player, "dialog-load-error", extra);
                 }
             } else {
                 java.util.Map<String, String> extra = new java.util.HashMap<>();
-                extra.put("%dialog_id%", dialogId);
+                extra.put("<id>", dialogId);
                 MessageUtil.sendMessageWithPlaceholders(plugin, player, "dialog-load-error", extra);
             }
             return true;

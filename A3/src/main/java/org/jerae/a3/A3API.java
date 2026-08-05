@@ -20,9 +20,18 @@ import java.util.regex.Pattern;
 public class A3API {
 
     private static final Map<String, BiFunction<Player, String, Double>> cooldownProviders = new HashMap<>();
+    private static final Map<java.util.UUID, String> dialogContext = new HashMap<>();
 
     public static void registerCooldownProvider(String pluginName, BiFunction<Player, String, Double> provider) {
         cooldownProviders.put(pluginName.toLowerCase(), provider);
+    }
+
+    public static void setDialogContext(Player player, String dialogId) {
+        if (dialogId == null) {
+            dialogContext.remove(player.getUniqueId());
+        } else {
+            dialogContext.put(player.getUniqueId(), dialogId);
+        }
     }
 
     public static String parseToString(Player player, String message) {
@@ -44,6 +53,11 @@ public class A3API {
             processed = processed.replace("%player_username%", player.getName());
         }
 
+        if (processed.contains("%dialog_id%")) {
+            String dialogId = dialogContext.getOrDefault(player.getUniqueId(), "none");
+            processed = processed.replace("%dialog_id%", dialogId);
+        }
+
         if (processed.contains("%a1_version%")) {
             Plugin a1 = Bukkit.getPluginManager().getPlugin("A1");
             String version = a1 != null ? a1.getPluginMeta().getVersion() : "Unknown";
@@ -60,6 +74,26 @@ public class A3API {
         }
         otherUsernameMatcher.appendTail(otherSb);
         processed = otherSb.toString();
+
+        Pattern otherDisplaynamePattern = Pattern.compile("(?i)%otherplayer_displayname_([a-zA-Z0-9_]+)%");
+        Matcher otherDisplaynameMatcher = otherDisplaynamePattern.matcher(processed);
+        StringBuffer otherDisplaySb = new StringBuffer();
+        while (otherDisplaynameMatcher.find()) {
+            String pName = otherDisplaynameMatcher.group(1);
+            Player target = Bukkit.getPlayerExact(pName);
+            otherDisplaynameMatcher.appendReplacement(otherDisplaySb, target != null ? net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(target.displayName()) : pName);
+        }
+        otherDisplaynameMatcher.appendTail(otherDisplaySb);
+        processed = otherDisplaySb.toString();
+
+        Pattern dialogIdPattern = Pattern.compile("(?i)%dialog_id_([a-zA-Z0-9_-]+)%");
+        Matcher dialogIdMatcher = dialogIdPattern.matcher(processed);
+        StringBuffer dialogSb = new StringBuffer();
+        while (dialogIdMatcher.find()) {
+            dialogIdMatcher.appendReplacement(dialogSb, dialogIdMatcher.group(1));
+        }
+        dialogIdMatcher.appendTail(dialogSb);
+        processed = dialogSb.toString();
 
         // Process cooldown placeholders dynamically: %[plugin].cooldown.[command]%
         Pattern cooldownPattern = Pattern.compile("%([a-zA-Z0-9]+)\\.cooldown\\.([a-zA-Z0-9]+)%");
