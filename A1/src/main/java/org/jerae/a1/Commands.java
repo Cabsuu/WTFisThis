@@ -286,13 +286,8 @@ public class Commands implements CommandExecutor {
 
             plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPA);
 
-            java.util.Map<String, String> pExtra = new java.util.HashMap<>();
-            pExtra.put("%target%", target.getName());
-            MessageUtil.sendMessageWithPlaceholders(plugin, player, "tpa-request-sent", pExtra);
-
-            java.util.Map<String, String> tExtra = new java.util.HashMap<>();
-            tExtra.put("%player%", player.getName());
-            MessageUtil.sendMessageWithPlaceholders(plugin, target, "tpa-request-received", tExtra);
+            MessageUtil.sendMessageWithTarget(plugin, player, target, "tpa-request-sent");
+            MessageUtil.sendMessageWithTarget(plugin, target, player, "tpa-request-received");
 
             return true;
         }
@@ -318,13 +313,8 @@ public class Commands implements CommandExecutor {
 
             plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPAHERE);
 
-            java.util.Map<String, String> pExtra = new java.util.HashMap<>();
-            pExtra.put("%target%", target.getName());
-            MessageUtil.sendMessageWithPlaceholders(plugin, player, "tpahere-request-sent", pExtra);
-
-            java.util.Map<String, String> tExtra = new java.util.HashMap<>();
-            tExtra.put("%player%", player.getName());
-            MessageUtil.sendMessageWithPlaceholders(plugin, target, "tpahere-request-received", tExtra);
+            MessageUtil.sendMessageWithTarget(plugin, player, target, "tpahere-request-sent");
+            MessageUtil.sendMessageWithTarget(plugin, target, player, "tpahere-request-received");
 
             return true;
         }
@@ -342,9 +332,7 @@ public class Commands implements CommandExecutor {
             for (Player target : Bukkit.getOnlinePlayers()) {
                 if (!target.equals(player)) {
                     plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPAHERE);
-                    java.util.Map<String, String> tExtra = new java.util.HashMap<>();
-                    tExtra.put("%player%", player.getName());
-                    MessageUtil.sendMessageWithPlaceholders(plugin, target, "tpahere-request-received", tExtra);
+                    MessageUtil.sendMessageWithTarget(plugin, target, player, "tpahere-request-received");
                 }
             }
 
