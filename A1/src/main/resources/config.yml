@@ -2,5 +2,12 @@
 # Do not touch this
 config-version: '${version}'
 
+# Nickname Feature
+# Prefix shown before displayname (ignored if player has hide prefix permission)
+nickname-prefix: "*"
+# Character limit for nicknames (color codes don't affect limit)
+nick-character-limit: 16
+
 # AFK Feature
+# Cooldown in seconds before the AFK command can be used again
 afk-cooldown: 3
