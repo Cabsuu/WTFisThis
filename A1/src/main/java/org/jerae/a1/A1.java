@@ -19,12 +19,14 @@ public final class A1 extends JavaPlugin implements Listener {
     private ConfigManager configManager;
     private DataManager dataManager;
     private AfkManager afkManager;
+    private TpaManager tpaManager;
 
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
         dataManager = new DataManager(this);
         afkManager = new AfkManager(this);
+        tpaManager = new TpaManager(this);
 
         A1API.init(this);
         A3API.registerCooldownProvider("a1", A1API::getCooldown);
@@ -35,6 +37,13 @@ public final class A1 extends JavaPlugin implements Listener {
         getCommand("afk").setExecutor(commands);
         getCommand("rename").setExecutor(commands);
         getCommand("hat").setExecutor(commands);
+
+        getCommand("tpa").setExecutor(commands);
+        getCommand("tpahere").setExecutor(commands);
+        getCommand("tpyes").setExecutor(commands);
+        getCommand("tpno").setExecutor(commands);
+        getCommand("tpaall").setExecutor(commands);
+
         if (getServer().getPluginManager().getPlugin("A4") != null) {
             org.bukkit.command.PluginCommand a1dialogCmd = getCommand("a1dialog");
             if (a1dialogCmd != null) {
@@ -64,6 +73,10 @@ public final class A1 extends JavaPlugin implements Listener {
         return afkManager;
     }
 
+    public TpaManager getTpaManager() {
+        return tpaManager;
+    }
+
     public void broadcastAfkStatus(Player afkPlayer, boolean isAfk) {
         String path = isAfk ? "afk-broadcast-enabled" : "afk-broadcast-disabled";
         String msg = configManager.getMessages().getString(path);
@@ -87,7 +100,13 @@ public final class A1 extends JavaPlugin implements Listener {
             boolean hasRgb = event.getPlayer().hasPermission("a1.nick.rgb");
             boolean hasGradient = event.getPlayer().hasPermission("a1.nick.gradient");
 
-            event.getPlayer().displayName(A2API.format(nickname, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient));
+            String finalNick = nickname;
+            if (!event.getPlayer().hasPermission("a1.nick.hideprefix")) {
+                String prefix = configManager.getConfig().getString("nickname-prefix", "*");
+                finalNick = prefix + finalNick;
+            }
+
+            event.getPlayer().displayName(A2API.format(finalNick, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient));
         }
     }
 

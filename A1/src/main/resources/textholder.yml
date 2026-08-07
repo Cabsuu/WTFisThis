@@ -7,4 +7,21 @@ example:
   hover-event: true
   hover-type: "show_text"
   hover-line: "<&b:&9>Click me"
-  use-in-chat: true
+
+tpyes:
+  text: "&a[Accept]"
+  click-event: true
+  click-type: "run_command"
+  click-line: "/tpyes"
+  hover-event: true
+  hover-type: "show_text"
+  hover-line: "&aClick to accept"
+
+tpno:
+  text: "&c[Deny]"
+  click-event: true
+  click-type: "run_command"
+  click-line: "/tpno"
+  hover-event: true
+  hover-type: "show_text"
+  hover-line: "&cClick to deny"

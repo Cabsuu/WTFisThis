@@ -26,6 +26,18 @@ no-hat-to-remove: "&cYou are not wearing a hat."
 hat-equipped: "&eEnjoy your new hat!"
 hat-removed: "&eYou removed your hat."
 
-dialog-load-error: "&cCouldn't load %dialog_id%."
+# Teleportation Feature
+tpa-request-sent: "&eRequest sent to %otherplayer_displayname_<player>%."
+tpa-request-received: "&e%otherplayer_displayname_<player>% requested to teleport to you. [tpyes] | [tpno]"
+tpahere-request-sent: "&eRequest sent to %otherplayer_displayname_<player>%."
+tpahere-request-received: "&e%otherplayer_displayname_<player>% requested you to teleport to them. [tpyes] | [tpno]"
+tpaall-request-sent: "&eRequest sent to all players."
+tpa-accepted: "&aTeleport request accepted."
+tpa-denied: "&cTeleport request denied."
+no-pending-request: "&cYou have no pending teleport requests."
+player-not-found: "&cPlayer not found."
+tpa-teleporting: "&eTeleporting..."
+
+dialog-load-error: "&cCouldn't load %dialog_id_<id>%."
 
 message-version: '${version}'

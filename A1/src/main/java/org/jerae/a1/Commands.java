@@ -89,9 +89,24 @@ public class Commands implements CommandExecutor {
                 }
             }
 
-            // Format nickname via A2 API using player's permissions
-            target.displayName(formatted);
+            if (!player.hasPermission("a1.nick.bypasslimit")) {
+                int limit = plugin.getConfigManager().getConfig().getInt("nick-character-limit", 16);
+                if (plainText.length() > limit) {
+                    player.sendMessage("Nickname is too long (limit: " + limit + ").");
+                    return true;
+                }
+            }
+
             plugin.getDataManager().setNickname(target.getUniqueId(), arg);
+
+            String finalNick = arg;
+            if (!target.hasPermission("a1.nick.hideprefix")) {
+                String prefix = plugin.getConfigManager().getConfig().getString("nickname-prefix", "*");
+                finalNick = prefix + finalNick;
+            }
+
+            Component finalFormatted = A2API.format(finalNick, hasColor, hasFormat, hasObfuscated, hasRgb, hasGradient);
+            target.displayName(finalFormatted);
 
             if (target.equals(player)) {
                 MessageUtil.sendMessage(plugin, player, "nickname-set");
@@ -250,6 +265,137 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
+        if (command.getName().equalsIgnoreCase("tpa")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+            if (!player.hasPermission("a1.tpa")) {
+                MessageUtil.sendMessage(plugin, player, "no-permission");
+                return true;
+            }
+            if (args.length == 0) {
+                player.sendMessage("Usage: /tpa <player>");
+                return true;
+            }
+            Player target = Bukkit.getPlayer(args[0]);
+            if (target == null || !target.isOnline()) {
+                MessageUtil.sendMessage(plugin, player, "player-not-found");
+                return true;
+            }
+
+            plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPA);
+
+            MessageUtil.sendMessageWithTarget(plugin, player, target, "tpa-request-sent");
+            MessageUtil.sendMessageWithTarget(plugin, target, player, "tpa-request-received");
+
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("tpahere")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+            if (!player.hasPermission("a1.tpahere")) {
+                MessageUtil.sendMessage(plugin, player, "no-permission");
+                return true;
+            }
+            if (args.length == 0) {
+                player.sendMessage("Usage: /tpahere <player>");
+                return true;
+            }
+            Player target = Bukkit.getPlayer(args[0]);
+            if (target == null || !target.isOnline()) {
+                MessageUtil.sendMessage(plugin, player, "player-not-found");
+                return true;
+            }
+
+            plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPAHERE);
+
+            MessageUtil.sendMessageWithTarget(plugin, player, target, "tpahere-request-sent");
+            MessageUtil.sendMessageWithTarget(plugin, target, player, "tpahere-request-received");
+
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("tpaall")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+            if (!player.hasPermission("a1.tpaall")) {
+                MessageUtil.sendMessage(plugin, player, "no-permission");
+                return true;
+            }
+
+            for (Player target : Bukkit.getOnlinePlayers()) {
+                if (!target.equals(player)) {
+                    plugin.getTpaManager().addRequest(target.getUniqueId(), player.getUniqueId(), TpaManager.RequestType.TPAHERE);
+                    MessageUtil.sendMessageWithTarget(plugin, target, player, "tpahere-request-received");
+                }
+            }
+
+            MessageUtil.sendMessage(plugin, player, "tpaall-request-sent");
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("tpyes")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+
+            TpaManager.TpaRequest request = plugin.getTpaManager().getRequest(player.getUniqueId());
+            if (request == null) {
+                MessageUtil.sendMessage(plugin, player, "no-pending-request");
+                return true;
+            }
+
+            Player requester = Bukkit.getPlayer(request.getRequester());
+            if (requester == null || !requester.isOnline()) {
+                MessageUtil.sendMessage(plugin, player, "player-not-found");
+                plugin.getTpaManager().removeRequest(player.getUniqueId());
+                return true;
+            }
+
+            MessageUtil.sendMessage(plugin, player, "tpa-accepted");
+            MessageUtil.sendMessage(plugin, requester, "tpa-accepted");
+            MessageUtil.sendMessage(plugin, player, "tpa-teleporting");
+            MessageUtil.sendMessage(plugin, requester, "tpa-teleporting");
+
+            if (request.getType() == TpaManager.RequestType.TPA) {
+                requester.teleportAsync(player.getLocation());
+            } else if (request.getType() == TpaManager.RequestType.TPAHERE) {
+                player.teleportAsync(requester.getLocation());
+            }
+
+            plugin.getTpaManager().removeRequest(player.getUniqueId());
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("tpno")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("Only players can use this command.");
+                return true;
+            }
+
+            TpaManager.TpaRequest request = plugin.getTpaManager().getRequest(player.getUniqueId());
+            if (request == null) {
+                MessageUtil.sendMessage(plugin, player, "no-pending-request");
+                return true;
+            }
+
+            Player requester = Bukkit.getPlayer(request.getRequester());
+            if (requester != null && requester.isOnline()) {
+                MessageUtil.sendMessage(plugin, requester, "tpa-denied");
+            }
+            MessageUtil.sendMessage(plugin, player, "tpa-denied");
+
+            plugin.getTpaManager().removeRequest(player.getUniqueId());
+            return true;
+        }
+
         if (command.getName().equalsIgnoreCase("a1dialog")) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("Only players can use this command.");
@@ -267,10 +413,14 @@ public class Commands implements CommandExecutor {
                 if (elem.isJsonObject()) {
                     org.jerae.a4.A4API.showDialog(player, dialogId, elem.getAsJsonObject(), dialogs);
                 } else {
-                    MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
+                    java.util.Map<String, String> extra = new java.util.HashMap<>();
+                    extra.put("<id>", dialogId);
+                    MessageUtil.sendMessageWithPlaceholders(plugin, player, "dialog-load-error", extra);
                 }
             } else {
-                MessageUtil.sendMessageWithArgs(plugin, player, "dialog-load-error", "%dialog_id%", dialogId);
+                java.util.Map<String, String> extra = new java.util.HashMap<>();
+                extra.put("<id>", dialogId);
+                MessageUtil.sendMessageWithPlaceholders(plugin, player, "dialog-load-error", extra);
             }
             return true;
         }

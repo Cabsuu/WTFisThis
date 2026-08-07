@@ -44,8 +44,6 @@ public class A4API {
             ConfigurationSection holder = section.getConfigurationSection(key);
             if (holder == null) continue;
 
-            if (isChat && !isTrue(holder, "use-in-chat")) continue;
-
             if (!player.hasPermission("a4.textholder." + key)) continue;
 
             result = result.replaceText(TextReplacementConfig.builder()

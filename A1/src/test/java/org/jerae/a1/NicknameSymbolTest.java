@@ -35,6 +35,10 @@ public class NicknameSymbolTest {
         when(plugin.getConfigManager()).thenReturn(configManager);
         when(configManager.getMessages()).thenReturn(messages);
         when(messages.getString(anyString())).thenReturn("");
+        org.bukkit.configuration.file.FileConfiguration config = mock(org.bukkit.configuration.file.FileConfiguration.class);
+        when(configManager.getConfig()).thenReturn(config);
+        when(config.getInt(anyString(), anyInt())).thenReturn(16);
+        when(config.getString(anyString(), anyString())).thenReturn("*");
 
         when(player.hasPermission("a1.nick")).thenReturn(true);
 

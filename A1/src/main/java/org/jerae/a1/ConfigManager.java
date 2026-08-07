@@ -52,7 +52,10 @@ public class ConfigManager {
 
         if (plugin.getServer().getPluginManager().getPlugin("A4") != null) {
             textholdersFile = new File(plugin.getDataFolder(), "textholder.yml");
-            textholders = processConfig(textholdersFile, "textholder.yml", null, null);
+            if (!textholdersFile.exists()) {
+                plugin.saveResource("textholder.yml", false);
+            }
+            textholders = YamlConfiguration.loadConfiguration(textholdersFile);
         }
 
         File oldTextholder = new File(plugin.getDataFolder(), "textholder.yml.old");
