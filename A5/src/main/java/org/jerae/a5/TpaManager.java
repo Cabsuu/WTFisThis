@@ -1,4 +1,4 @@
-package org.jerae.a1;
+package org.jerae.a5;
 
 import org.bukkit.entity.Player;
 
@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class TpaManager {
 
-    private final A1 plugin;
+    private final A5 plugin;
 
     public enum RequestType {
         TPA,
@@ -35,7 +35,7 @@ public class TpaManager {
 
     private final Map<UUID, TpaRequest> requests = new HashMap<>();
 
-    public TpaManager(A1 plugin) {
+    public TpaManager(A5 plugin) {
         this.plugin = plugin;
     }
 

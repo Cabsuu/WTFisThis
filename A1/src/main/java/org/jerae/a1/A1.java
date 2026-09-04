@@ -12,6 +12,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jerae.a2.A2API;
 import org.jerae.a3.A3API;
+import org.jerae.a5.A5API;
 import net.kyori.adventure.text.Component;
 
 public final class A1 extends JavaPlugin implements Listener {
@@ -19,16 +20,20 @@ public final class A1 extends JavaPlugin implements Listener {
     private ConfigManager configManager;
     private DataManager dataManager;
     private AfkManager afkManager;
-    private TpaManager tpaManager;
 
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
         dataManager = new DataManager(this);
         afkManager = new AfkManager(this);
-        tpaManager = new TpaManager(this);
 
         A1API.init(this);
+        if (getServer().getPluginManager().getPlugin("A5") != null) {
+            A5API.registerMessageSenders(
+                (player, msgKey) -> MessageUtil.sendMessage(this, player, msgKey),
+                (player, target, msgKey) -> MessageUtil.sendMessageWithTarget(this, player, target, msgKey)
+            );
+        }
         A3API.registerCooldownProvider("a1", A1API::getCooldown);
 
         Commands commands = new Commands(this);
@@ -38,18 +43,7 @@ public final class A1 extends JavaPlugin implements Listener {
         getCommand("rename").setExecutor(commands);
         getCommand("hat").setExecutor(commands);
 
-        getCommand("tpa").setExecutor(commands);
-        getCommand("tpahere").setExecutor(commands);
-        getCommand("tpyes").setExecutor(commands);
-        getCommand("tpno").setExecutor(commands);
-        getCommand("tpaall").setExecutor(commands);
 
-        if (getServer().getPluginManager().getPlugin("A4") != null) {
-            org.bukkit.command.PluginCommand a1dialogCmd = getCommand("a1dialog");
-            if (a1dialogCmd != null) {
-                a1dialogCmd.setExecutor(commands);
-            }
-        }
 
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -71,10 +65,6 @@ public final class A1 extends JavaPlugin implements Listener {
 
     public AfkManager getAfkManager() {
         return afkManager;
-    }
-
-    public TpaManager getTpaManager() {
-        return tpaManager;
     }
 
     public void broadcastAfkStatus(Player afkPlayer, boolean isAfk) {
@@ -138,7 +128,7 @@ public final class A1 extends JavaPlugin implements Listener {
     @EventHandler
     public void onAsyncChat(AsyncChatEvent event) {
         Component message = event.message();
-        if (getServer().getPluginManager().getPlugin("A4") != null) {
+                if (getServer().getPluginManager().getPlugin("A4") != null) {
             message = org.jerae.a4.A4API.parseTextholders(event.getPlayer(), message, true, configManager.getTextholders(), getLogger());
         }
         event.message(message);
