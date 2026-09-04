@@ -1,0 +1,37 @@
+name: A5
+description: Survival gameplay mechanic teleportation
+version: '${version}'
+
+main: org.jerae.a5.A5
+api-version: '26.2'
+load: POSTWORLD
+
+authors: [Jerae]
+depend: [A3]
+
+commands:
+  tpa:
+    description: "Request to teleport to another player"
+    aliases:
+      - tpask
+    usage: "/<command> <player>"
+  tpahere:
+    description: "Request another player to teleport to you"
+    aliases:
+      - tpaskhere
+    usage: "/<command> <player>"
+  tpyes:
+    description: "Accept a teleportation request"
+    aliases:
+      - tpaccept
+    usage: "/<command>"
+  tpno:
+    description: "Decline a teleportation request"
+    aliases:
+      - tpdeny
+    usage: "/<command>"
+  tpaall:
+    description: "Request all online players to teleport to you"
+    aliases:
+      - tpaaskall
+    usage: "/<command>"

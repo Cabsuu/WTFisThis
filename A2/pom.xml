@@ -9,7 +9,7 @@
   <version>1.0</version>
   <packaging>jar</packaging>
 
-  <name>a2</name>
+  <name>A2</name>
 
   <properties>
     <java.version>25</java.version>

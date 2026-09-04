@@ -11,10 +11,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>A1</module>
+        <module>A5</module>
         <module>A2</module>
         <module>A3</module>
         <module>A4</module>
+        <module>A1</module>
     </modules>
 
     <properties>

@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.jerae</groupId>
-  <artifactId>a1</artifactId>
+  <artifactId>a5</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
 
-  <name>A1</name>
+  <name>A5</name>
 
   <properties>
     <java.version>25</java.version>
@@ -67,12 +67,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.jerae</groupId>
-      <artifactId>a5</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>io.papermc.paper</groupId>
       <artifactId>paper-api</artifactId>
       <version>[26.2.build,)</version>
@@ -80,19 +74,7 @@
     </dependency>
     <dependency>
       <groupId>org.jerae</groupId>
-      <artifactId>a2</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jerae</groupId>
       <artifactId>a3</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jerae</groupId>
-      <artifactId>a4</artifactId>
       <version>1.0</version>
       <scope>provided</scope>
     </dependency>
